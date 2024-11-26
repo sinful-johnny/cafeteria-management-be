@@ -1,0 +1,30 @@
+-- use cafeteria_DB
+-- go
+
+use cafeteriaDB
+go
+
+CREATE OR ALTER PROCEDURE GetAllFoodType
+AS
+BEGIN
+    SELECT *
+    FROM FOOD_TYPE
+END
+GO
+
+CREATE OR ALTER PROCEDURE GetAllShapeTypes
+AS
+BEGIN
+    SELECT *
+    FROM SHAPE_TYPE
+END
+GO
+
+GRANT EXECUTE ON OBJECT::GetAllFoodType
+    TO ADMIN; 
+GO
+
+GRANT EXECUTE ON OBJECT::GetAllShapeTypes
+    TO ADMIN; 
+GO
+
