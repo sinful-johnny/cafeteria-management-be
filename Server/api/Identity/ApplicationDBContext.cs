@@ -1,18 +1,20 @@
 ﻿using api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using cafeteriaDBLocalHost;
-using Microsoft.Extensions.Configuration;
-using api.Dtos.Account;
 using api.Dtos.USER;
 
-namespace api.Data
+namespace api.Identity
 {
-    public class ApplicationDBContext : IdentityDbContext<AppUser>
+    public class ApplicationDBContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
+        public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<MenuPermission> MenuPermissions { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<ApplicationRoleMenu> RoleMenus { get; set; }
+
         //private readonly string _connectionString;
-        public ApplicationDBContext(DbContextOptions dbContextOptions)
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> dbContextOptions)
             : base(dbContextOptions)
         {
         }
@@ -58,6 +60,64 @@ namespace api.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Additional tables.
+
+            modelBuilder.Entity<MenuItem>(item =>
+            {
+                item.ToTable("AspNetMenu");
+                item.HasMany(y => y.Children)
+                    .WithOne(r => r.ParentItem)
+                    .HasForeignKey(u => u.ParentId);
+
+                item.HasMany(t => t.RoleMenus)
+                    .WithOne(u => u.MenuItem)
+                    .HasForeignKey(r => r.MenuId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            modelBuilder.Entity<ApplicationRoleMenu>(roleMenu =>
+            {
+                roleMenu.ToTable("AspNetRoleMenu");
+
+                roleMenu.HasOne(o => o.Role)
+                    .WithMany(u => u.RoleMenus)
+                    .HasForeignKey(e => e.RoleId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                roleMenu.HasOne(o => o.MenuItem)
+                    .WithMany(u => u.RoleMenus)
+                    .HasForeignKey(e => e.MenuId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            modelBuilder.Entity<MenuPermission>(mp =>
+            {
+                mp.ToTable("MenuPermission");
+
+                mp.HasKey(l => new { l.RoleMenuId, l.PermissionId });
+
+                mp.HasOne(o => o.Permission)
+                    .WithMany(i => i.MenuPermissions)
+                    .IsRequired();
+
+                mp.HasOne(o => o.RoleMenu)
+                    .WithMany(i => i.Permissions)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<Permission>(mp =>
+            {
+                mp.ToTable("Permission");
+
+                mp.HasKey(l => l.Id);
+
+                mp.HasMany(o => o.MenuPermissions)
+                    .WithOne(i => i.Permission)
+                    .HasForeignKey(y => y.PermissionId);
+            });
+
+            // Main tables in schema
 
             modelBuilder.Entity<UserRole>()
                 .HasNoKey();

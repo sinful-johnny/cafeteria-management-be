@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using api.Data;
+using api.Identity;
 using api.Interfaces;
 using Microsoft.Extensions.Options;
 using api.Models;
@@ -79,10 +79,10 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
 
 //Identity services
-builder.Services.AddIdentity<AppUser, IdentityRole>(options => //extend the roles 
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => //extend the roles 
                                                                //extend the AppUser 
 {
-    options.Password.RequireDigit = true; //Require numbers within the password
+    options.Password.RequireDigit = true; //Require numbers within thcd e password
 
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
@@ -91,7 +91,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options => //extend the role
 
     options.Password.RequiredLength = 8;
 })
-.AddEntityFrameworkStores<ApplicationDBContext>(); //Entity Framework Stores
+                .AddEntityFrameworkStores<ApplicationDBContext>()
+                .AddRoleManager<RoleManager<ApplicationRole>>()
+                .AddSignInManager<SignInManager<ApplicationUser>>()
+                .AddUserManager<UserManager<ApplicationUser>>(); ; //Entity Framework Stores
 
 //Add Schema
 builder.Services.AddAuthentication(options =>
@@ -155,6 +158,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 
