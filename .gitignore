@@ -109,3 +109,4 @@ appsettings.Development.json
 
 # Build folders (custom
 .fake
+Server/api/appsettings.Development.json
