@@ -35,12 +35,12 @@ INSERT INTO CANVA_ADMIN (ID_CANVA, ID_ADMIN, LOGIN_STATUS, CREATED_AT, UPDATE_AT
 -- FROM SHAPE_TYPE
 --SHAPE_TYPE DATA
 INSERT INTO SHAPE_TYPE (ID_SHAPE, WIDTH, HEIGHT, RADIUS, SHAPE_TYPENAME, CREATED_AT, UPDATE_AT) VALUES  
-('S001', 100.0, 50.0, 0, 'Rectangle', GETDATE(),GETDATE()),  
-('S002', 75.0, 75.0, 0, 'Rectangle', GETDATE(),GETDATE()),  
-('S003', 60.0, 80.0, 0, 'Rectangle', GETDATE(),GETDATE()),
-('S004', 0, 0, 100.0, 'Circle', GETDATE(),GETDATE()),  
-('S005', 0, 0, 75.0, 'Circle', GETDATE(),GETDATE()),  
-('S006', 0, 0, 60.0, 'Circle', GETDATE(),GETDATE());
+('S001', 100.0, 50.0, 0, 'Rectangle w100 h50', GETDATE(),GETDATE()),  
+('S002', 75.0, 75.0, 0, 'Rectangle w75 h75', GETDATE(),GETDATE()),  
+('S003', 60.0, 80.0, 0, 'Rectangle w60 h80', GETDATE(),GETDATE()),
+('S004', 0, 0, 100.0, 'Circle r100', GETDATE(),GETDATE()),  
+('S005', 0, 0, 75.0, 'Circle r75', GETDATE(),GETDATE()),  
+('S006', 0, 0, 60.0, 'Circle r60', GETDATE(),GETDATE());
 
 -- SELECT *
 -- FROM CAFETERIA_TABLE 
@@ -56,11 +56,11 @@ INSERT INTO CAFETERIA_TABLE (ID_TABLE, X_COORDINATE, Y_COORDINATE, ID_SHAPE, ID_
 -- SELECT*
 -- FROM FOOD_TYPE
 --FOOD_TYPE DATA
-INSERT INTO FOOD_TYPE (ID_FOOD, FOOD_NAME, FOOD_TYPENAME, AMOUNT_LEFT, PRICE, FOOD_TYPE_STATUS, CREATED_AT, UPDATE_AT) VALUES  
-('F001', 'Burger', 'Fast Food', 20, 5.99, 'available', GETDATE(),GETDATE()),  
-('F002', 'Pizza', 'Fast Food', 15, 8.99, 'available', GETDATE(),GETDATE()),  
-('F003', 'Salad', 'Healthy', 30, 4.99, 'available', GETDATE(),GETDATE()),
-('F004', 'Coffee', 'Coffee', 30, 5.99, 'available', GETDATE(),GETDATE());
+INSERT INTO FOOD_TYPE (ID_FOOD, FOOD_NAME, FOOD_TYPENAME, AMOUNT_LEFT, PRICE, FOOD_TYPE_STATUS, CREATED_AT, UPDATE_AT, IMAGE_LINK) VALUES  
+('F001', 'Honey Jasmine Green', 'Tea', 20, 5.99, 'available', GETDATE(),GETDATE(), './public/tea1.svg'),  
+('F002', 'Raspberry Snow', 'Tea', 15, 8.99, 'available', GETDATE(),GETDATE(), './public/tea2.svg'),  
+('F003', 'Pure Coffee', 'Coffee', 30, 4.99, 'available', GETDATE(),GETDATE(), '/public/coffee1.svg'),
+('F004', 'Iced Coffee with Milk', 'Coffee', 30, 5.99, 'available', GETDATE(),GETDATE(), './public/coffee2.svg');
 
 
 -- SELECT*

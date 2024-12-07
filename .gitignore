@@ -102,6 +102,7 @@ Thumbs.db
 ehthumbs.db
 #appsettings
 appsettings.json
+appsettings.Development.json
 
 # Folder config file for VS Code
 .vscode/**
