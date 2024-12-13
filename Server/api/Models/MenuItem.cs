@@ -1,6 +1,6 @@
-﻿using api.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using api.Identity;
 
 namespace api.Models
 {

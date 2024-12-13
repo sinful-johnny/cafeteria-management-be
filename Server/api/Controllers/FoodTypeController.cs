@@ -1,4 +1,4 @@
-﻿using api.Identity;
+﻿using api.Data;
 using api.Interfaces;
 using api.Mappers;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +19,7 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN,USER")]
+        //[Authorize(Roles = "ADMIN,USER")]
         public async Task<IActionResult> GetAllFoodType()
         {
             if (!ModelState.IsValid)

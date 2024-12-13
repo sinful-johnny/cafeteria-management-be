@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using api.Identity;
+using api.Data;
 using api.Interfaces;
 using Microsoft.Extensions.Options;
 using api.Models;
@@ -79,10 +79,10 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
 
 //Identity services
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => //extend the roles 
+builder.Services.AddIdentity<AppUser, IdentityRole>(options => //extend the roles 
                                                                //extend the AppUser 
 {
-    options.Password.RequireDigit = true; //Require numbers within thcd e password
+    options.Password.RequireDigit = true; //Require numbers within the password
 
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
@@ -91,10 +91,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => //exte
 
     options.Password.RequiredLength = 8;
 })
-                .AddEntityFrameworkStores<ApplicationDBContext>()
-                .AddRoleManager<RoleManager<ApplicationRole>>()
-                .AddSignInManager<SignInManager<ApplicationUser>>()
-                .AddUserManager<UserManager<ApplicationUser>>(); ; //Entity Framework Stores
+.AddEntityFrameworkStores<ApplicationDBContext>(); //Entity Framework Stores
 
 //Add Schema
 builder.Services.AddAuthentication(options =>
@@ -136,6 +133,11 @@ builder.Services.AddScoped<IAdminRepository, ADMIN_repository>();
 builder.Services.AddScoped<IFOOD_TYPE_Repository, FOOD_repository>();
 builder.Services.AddScoped<ISHAPE_TYPE_Repository, SHAPE_TYPE_repository>();
 builder.Services.AddScoped<ITABLE_FOOD_Repository, TABLE_FOODs_repository>();
+
+
+//Identity Scope
+builder.Services.AddScoped<IMenuResource_Repository, MenuResource_repository>();
+
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
@@ -158,7 +160,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers();
 
