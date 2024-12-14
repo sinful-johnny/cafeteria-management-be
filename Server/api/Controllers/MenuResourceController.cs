@@ -30,22 +30,31 @@ namespace api.Controllers
 
             // Map permissions
             var permissionMap = permissionRoles
-                .Select(p => p.ToPermissionDto())
-                .GroupBy(p => new { p.rolemenuID, p.PermissionName })
-                .Select(group => group.First())
-                .ToList();
+                .GroupBy(p => new { p.rolemenuID, p.permissionID })
+                .ToDictionary(
+                    group => new { group.Key.rolemenuID, group.Key.permissionID },
+                    group => group.First().ToPermissionDto()
+                );
 
-            // Map roles and their permissions
+            // Map roles and their permissions grouped by menuID
             var rolePermissionMap = roleMenus
-            .GroupBy(r => r.menuID)
-            .ToDictionary(
-                group => group.Key,
-                group => group.Select(roleMenu =>
-                    roleMenu.ToRolePermissionDto(
-                        permissionMap.Where(p => p.rolemenuID == roleMenu.rolemenuID).ToList()
-                    )
-                ).ToList()
-            );
+                .GroupBy(r => r.menuID)
+                .ToDictionary(
+                    group => group.Key, // Key is the menuID
+                    group => group
+                        .GroupBy(roleMenu => roleMenu.roleName) // Group roles by roleName
+                        .Select(roleGroup => roleGroup.First().ToRolePermissionDto( // Use the first roleMenu to create the DTO
+                            roleGroup
+                                .SelectMany(roleMenu =>
+                                            permissionMap
+                                                .Where(p => p.Key.rolemenuID == roleMenu.rolemenuID)
+                                                .Select(p => p.Value) // Use existing permission DTOs
+                                            )
+                                                .Distinct()
+                                                .ToList() // Consolidate permissions for the role
+                        ))
+                    .ToList()
+                );
 
             // Recursive function to build the menu tree
             List<MenuResourceDto> BuildMenuTree(int? parentId)
@@ -86,22 +95,31 @@ namespace api.Controllers
 
             // Map permissions
             var permissionMap = permissionRoles
-                .Select(p => p.ToPermissionDto())
-                .GroupBy(p => new { p.rolemenuID, p.PermissionName }) // Group by unique fields
-                .Select(group => group.First())
-                .ToList();
+                .GroupBy(p => new { p.rolemenuID, p.permissionID })
+                .ToDictionary(
+                    group => new { group.Key.rolemenuID, group.Key.permissionID },
+                    group => group.First().ToPermissionDto()
+                );
 
-            // Map roles and their permissions
+            // Map roles and their permissions grouped by menuID
             var rolePermissionMap = roleMenus
-            .GroupBy(r => r.menuID)
-            .ToDictionary(
-                group => group.Key,
-                group => group.Select(roleMenu =>
-                    roleMenu.ToRolePermissionDto(
-                        permissionMap.Where(p => p.rolemenuID == roleMenu.rolemenuID).ToList()
-                    )
-                ).ToList()
-            );
+                .GroupBy(r => r.menuID)
+                .ToDictionary(
+                    group => group.Key, // Key is the menuID
+                    group => group
+                        .GroupBy(roleMenu => roleMenu.roleName) // Group roles by roleName
+                        .Select(roleGroup => roleGroup.First().ToRolePermissionDto( // Use the first roleMenu to create the DTO
+                            roleGroup
+                                .SelectMany(roleMenu =>
+                                            permissionMap
+                                                .Where(p => p.Key.rolemenuID == roleMenu.rolemenuID)
+                                                .Select(p => p.Value) // Use existing permission DTOs
+                                            )
+                                                .Distinct()
+                                                .ToList() // Consolidate permissions for the role
+                        ))
+                    .ToList()
+                );
 
             // Recursive function to build the menu tree
             List<MenuResourceDto> BuildMenuTree(string menuName)

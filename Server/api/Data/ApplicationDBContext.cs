@@ -132,10 +132,10 @@ namespace api.Data
                 .HasKey(v => new { v.menuID }); // Composite key for V_Menu
 
             modelBuilder.Entity<V_Permission_RoleMenu>()
-                .HasKey(v => new { v.rolemenuID }); // Composite key for V_Permission_RoleMenu
+                .HasKey(v => new { v.rolemenuID, v.permissionID }); // Composite key for V_Permission_RoleMenu
 
             modelBuilder.Entity<V_Role_Menu>()
-                .HasKey(v => new { v.rolemenuID }); // Composite key for V_Role_Menu
+                .HasKey(v => new { v.menuID, v.rolemenuID, v.permissionID }); // Composite key for V_Role_Menu
 
             //Constraints for CafeteriaDB
 

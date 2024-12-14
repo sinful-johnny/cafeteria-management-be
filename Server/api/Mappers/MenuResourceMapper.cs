@@ -25,7 +25,8 @@ namespace api.Mappers
                 menuID = roleMenu.menuID,
                 rolemenuID = roleMenu.rolemenuID,
                 RoleName = roleMenu.roleName,
-                PermissionType = permissions
+                PermissionType = permissions,
+                permissionID = roleMenu.permissionID
             };
         }
 
@@ -34,7 +35,8 @@ namespace api.Mappers
             return new PermissionDto
             {
                 rolemenuID = permissions.rolemenuID,
-                PermissionName = permissions.permissionName
+                PermissionName = permissions.permissionName,
+                permissionID = permissions.permissionID,
             };
         }
     }
