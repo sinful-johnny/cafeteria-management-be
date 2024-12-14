@@ -29,7 +29,11 @@ namespace api.Controllers
             var (menus, roleMenus, permissionRoles) = await _tableMenuResouceRepo.getAllMenuResource();
 
             // Map permissions
-            var permissionMap = permissionRoles.Select(p => p.ToPermissionDto()).ToList();
+            var permissionMap = permissionRoles
+                .Select(p => p.ToPermissionDto())
+                .GroupBy(p => new { p.rolemenuID, p.PermissionName })
+                .Select(group => group.First())
+                .ToList();
 
             // Map roles and their permissions
             var rolePermissionMap = roleMenus
@@ -81,7 +85,11 @@ namespace api.Controllers
             var (menus, roleMenus, permissionRoles) = await _tableMenuResouceRepo.getAllMenuResource();
 
             // Map permissions
-            var permissionMap = permissionRoles.Select(p => p.ToPermissionDto()).ToList();
+            var permissionMap = permissionRoles
+                .Select(p => p.ToPermissionDto())
+                .GroupBy(p => new { p.rolemenuID, p.PermissionName }) // Group by unique fields
+                .Select(group => group.First())
+                .ToList();
 
             // Map roles and their permissions
             var rolePermissionMap = roleMenus
@@ -122,14 +130,14 @@ namespace api.Controllers
 
                 // Build the tree starting from the parent menu
                 return new List<MenuResourceDto>
-    {
-        parentMenu.ToMenuResourceDto(
-            BuildTree(parentMenu.menuID), // Build children recursively
-            rolePermissionMap.ContainsKey(parentMenu.menuID)
-                ? rolePermissionMap[parentMenu.menuID] // Roles for the parent menu
-                : new List<RolePermissionDto>() // No roles found
-        )
-    };
+                {
+                    parentMenu.ToMenuResourceDto(
+                        BuildTree(parentMenu.menuID), // Build children recursively
+                        rolePermissionMap.ContainsKey(parentMenu.menuID)
+                            ? rolePermissionMap[parentMenu.menuID] // Roles for the parent menu
+                            : new List<RolePermissionDto>() // No roles found
+                    )
+                };
             }
 
             // Build menu tree starting from the root (where parentId is null)
