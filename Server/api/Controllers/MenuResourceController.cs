@@ -5,6 +5,7 @@ using api.Models.AuthModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata;
+using System.Text.Json;
 
 namespace api.Controllers
 {
@@ -59,8 +60,15 @@ namespace api.Controllers
             // Build menu tree starting from the root (where parentId is null)
             var menuDtos = BuildMenuTree(null);
 
+            // Serialize the object manually using JsonSerializer
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Ensure camelCase naming for JSON
+                WriteIndented = true // Optional: Pretty-print JSON
+            };
+            var jsonResult = JsonSerializer.Serialize(menuDtos, jsonOptions);
 
-            return Ok(menuDtos);
+            return Content(jsonResult, "application/json");
         }
     }
 }
