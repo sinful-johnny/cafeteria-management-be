@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using api.Data;
 using api.Interfaces;
 using Microsoft.Extensions.Options;
 using api.Models;
@@ -16,6 +15,10 @@ using Azure.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.HttpLogging;
 using api.Helpers;
+using api.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authorization;
+using api.Models.AuthModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,27 +74,36 @@ builder.Services.AddControllers().AddNewtonsoftJson(options => {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
 
+builder.Services.AddTransient<ApplicationDBContext>();
+builder.Services.AddTransient<ApplicationUserManager>();
+
 //DbContext services
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-
 //Identity services
-builder.Services.AddIdentity<AppUser, IdentityRole>(options => //extend the roles 
-                                                               //extend the AppUser 
-{
-    options.Password.RequireDigit = true; //Require numbers within the password
+//builder.Services.AddIdentity<AppUser, IdentityRole>(options => //extend the roles 
+//                                                               //extend the AppUser 
+//{
+//    options.Password.RequireDigit = true; //Require numbers within the password
 
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
+//    options.Password.RequireLowercase = true;
+//    options.Password.RequireUppercase = true;
 
-    options.Password.RequireNonAlphanumeric = true;
+//    options.Password.RequireNonAlphanumeric = true;
 
-    options.Password.RequiredLength = 8;
-})
-.AddEntityFrameworkStores<ApplicationDBContext>(); //Entity Framework Stores
+//    options.Password.RequiredLength = 8;
+//})
+//.AddEntityFrameworkStores<ApplicationDBContext>(); //Entity Framework Stores
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDBContext>()
+                .AddRoleManager<RoleManager<ApplicationRole>>()
+                .AddSignInManager<SignInManager<ApplicationUser>>()
+                .AddUserManager<UserManager<ApplicationUser>>();
 
 //Add Schema
 builder.Services.AddAuthentication(options =>
@@ -126,6 +138,11 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("UserOnly", policy => policy.RequireRole("USER"));
 });
 
+builder.Services.AddAuthorization(options => 
+{ options.AddPolicy("ReadWrite", policy => 
+    policy.Requirements.Add(new PolicyRequirementModel("ReadWrite"))); 
+});
+
 
 //Hook Interfaces and Repository in
 builder.Services.AddScoped<ICanvaRepository, CANVA_repository>();
@@ -140,6 +157,8 @@ builder.Services.AddScoped<IMenuResource_Repository, MenuResource_repository>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddSingleton<IAuthorizationHandler, MenuResourceService>();
 
 var app = builder.Build();
 

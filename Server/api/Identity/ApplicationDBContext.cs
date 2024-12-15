@@ -1,14 +1,12 @@
-﻿using api.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using CafeteriaDB;
 using Microsoft.Extensions.Configuration;
 using api.Dtos.Account;
 using api.Dtos.USER;
-using api.Identity;
 using IdentityCafeteriaModel;
 
-namespace api.Data
+namespace api.Identity
 {
     public class ApplicationDBContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
@@ -37,8 +35,9 @@ namespace api.Data
         //Entity for Identity
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<MenuPermission> MenuPermissions { get; set; }
-        public DbSet<Identity.Permission> Permissions { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
         public DbSet<ApplicationRoleMenu> RoleMenus { get; set; }
+        public DbSet<ApplicationAPI> APIs { get; set; }
 
         //View for Identity
         public DbSet<V_Menu> VMenus { get; set; }
@@ -47,7 +46,7 @@ namespace api.Data
 
         //Entity for Db
         public DbSet<UserRole> userRoles { get; set; }
-        public DbSet<ADMIN> Admin {  get; set; }
+        public DbSet<ADMIN> Admin { get; set; }
 
         public DbSet<CANVA> Canva { get; set; }
 
@@ -74,6 +73,18 @@ namespace api.Data
             base.OnModelCreating(modelBuilder);
 
             //Constraints for Identity
+
+            modelBuilder.Entity<ApplicationAPI>(item =>
+            {
+                item.ToTable("AspNetAPI");
+
+                item.HasMany(t => t.RoleMenus)
+                    .WithOne(u => u.API)
+                    .HasForeignKey(r => r.ApiId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+
             modelBuilder.Entity<MenuItem>(item =>
             {
                 item.ToTable("AspNetMenu");
@@ -117,7 +128,7 @@ namespace api.Data
                     .IsRequired();
             });
 
-            modelBuilder.Entity<Identity.Permission>(mp =>
+            modelBuilder.Entity<Permission>(mp =>
             {
                 mp.ToTable("Permission");
 

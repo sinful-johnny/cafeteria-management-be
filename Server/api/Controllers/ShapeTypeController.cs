@@ -1,5 +1,4 @@
-﻿using api.Data;
-using api.Interfaces;
+﻿using api.Interfaces;
 using api.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

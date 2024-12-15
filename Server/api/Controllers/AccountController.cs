@@ -1,5 +1,6 @@
 ﻿using api.Dtos.Account;
 using api.Interfaces;
+using api.Models.AuthModels;
 using CafeteriaDB;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,11 +45,71 @@ namespace api.Controllers
             if (result.Contains("Invalid email or password.") || result.Contains("Invalid email or password.") )
                     return Unauthorized("Username not found or password incorrect");
 
+            var menuResource = new MenuResource
+            {
+                MenuName = "MainMenu",
+                OwnerRoles = new List<RolePermission>
+    {
+        new RolePermission
+        {
+            RoleName = "Admin",
+            PermissionType = new List<string> { "Read", "Write", "Delete" }
+        },
+        new RolePermission
+        {
+            RoleName = "User",
+            PermissionType = new List<string> { "Read" }
+        }
+    },
+                children = new List<MenuResource>
+    {
+        new MenuResource
+        {
+            MenuName = "SubMenu1",
+            OwnerRoles = new List<RolePermission>
+            {
+                new RolePermission
+                {
+                    RoleName = "Admin",
+                    PermissionType = new List<string> { "Read", "Write" }
+                }
+            },
+            children = new List<MenuResource>
+            {
+                new MenuResource
+                {
+                    MenuName = "SubSubMenu1",
+                    OwnerRoles = new List<RolePermission>
+                    {
+                        new RolePermission
+                        {
+                            RoleName = "Admin",
+                            PermissionType = new List<string> { "Read" }
+                        }
+                    }
+                }
+            }
+        },
+        new MenuResource
+        {
+            MenuName = "SubMenu2",
+            OwnerRoles = new List<RolePermission>
+            {
+                new RolePermission
+                {
+                    RoleName = "User",
+                    PermissionType = new List<string> { "Read" }
+                }
+            }
+        }
+    }
+            };
+
             return Ok(
                 new NewUserDto
                 {
                     Email = admin.EMAIL,
-                    Token = await _tokenService.CreateToken(admin)
+                    Token = await _tokenService.CreateToken(menuResource)
                 }
             );
         }
@@ -74,6 +135,66 @@ namespace api.Controllers
 
 
                 string result = await _adminRepo.RegisterAdminAsync(registerDto);
+
+                var menuResource = new MenuResource
+                {
+                    MenuName = "MainMenu",
+                    OwnerRoles = new List<RolePermission>
+    {
+        new RolePermission
+        {
+            RoleName = "Admin",
+            PermissionType = new List<string> { "Read", "Write", "Delete" }
+        },
+        new RolePermission
+        {
+            RoleName = "User",
+            PermissionType = new List<string> { "Read" }
+        }
+    },
+                    children = new List<MenuResource>
+    {
+        new MenuResource
+        {
+            MenuName = "SubMenu1",
+            OwnerRoles = new List<RolePermission>
+            {
+                new RolePermission
+                {
+                    RoleName = "Admin",
+                    PermissionType = new List<string> { "Read", "Write" }
+                }
+            },
+            children = new List<MenuResource>
+            {
+                new MenuResource
+                {
+                    MenuName = "SubSubMenu1",
+                    OwnerRoles = new List<RolePermission>
+                    {
+                        new RolePermission
+                        {
+                            RoleName = "Admin",
+                            PermissionType = new List<string> { "Read" }
+                        }
+                    }
+                }
+            }
+        },
+        new MenuResource
+        {
+            MenuName = "SubMenu2",
+            OwnerRoles = new List<RolePermission>
+            {
+                new RolePermission
+                {
+                    RoleName = "User",
+                    PermissionType = new List<string> { "Read" }
+                }
+            }
+        }
+    }
+                };
                 if (result.Contains("User registered successfully"))
                 {
                     return Ok
@@ -81,7 +202,7 @@ namespace api.Controllers
                                 new NewUserDto
                                 {
                                     Email = admin.EMAIL,
-                                    Token = await _tokenService.CreateToken(admin)
+                                    Token = await _tokenService.CreateToken(menuResource)
                                 }
                             );
                 }

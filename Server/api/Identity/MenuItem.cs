@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using api.Identity;
 
-namespace api.Models
+namespace api.Identity
 {
     [Table("AspNetMenu")]
     public class MenuItem

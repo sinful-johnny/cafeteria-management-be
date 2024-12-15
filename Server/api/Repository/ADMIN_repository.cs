@@ -1,5 +1,5 @@
-﻿using api.Data;
-using api.Dtos.Account;
+﻿using api.Dtos.Account;
+using api.Identity;
 using api.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

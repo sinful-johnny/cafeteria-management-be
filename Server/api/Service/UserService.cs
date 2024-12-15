@@ -1,5 +1,5 @@
-﻿using api.Data;
-using api.Dtos.USER;
+﻿using api.Dtos.USER;
+using api.Identity;
 using api.Interfaces;
 using CafeteriaDB;
 using Microsoft.EntityFrameworkCore;

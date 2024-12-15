@@ -10,10 +10,10 @@ namespace api.Identity
             : this()
         {
             this.Name = name;
-            RoleMenus = new HashSet<ApplicationRoleMenu>();
+            RoleApis = new HashSet<ApplicationRoleAPI>();
         }
 
-        public ICollection<ApplicationRoleMenu> RoleMenus { get; set; }
+        public ICollection<ApplicationRoleAPI> RoleApis { get; set; }
 
     }
 }

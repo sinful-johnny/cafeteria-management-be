@@ -1,8 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using api.Interfaces;
 using api.Models;
+using api.Models.AuthModels;
 using CafeteriaDB;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,22 +22,26 @@ namespace api.Service
             this._key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
             this._userService = userService;
         }
-        public async Task<string> CreateToken(ADMIN admin)
+        public async Task<string> CreateToken(MenuResource resource)
         {
 
-            var roles = await _userService.GetUserRolesAsync(admin);
+            //var roles = await _userService.GetUserRolesAsync(admin);
 
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Email, admin.EMAIL),
-                //new Claim(JwtRegisteredClaimNames.NameId, admin.ID_ADMIN)
-            };
+            //var claims = new List<Claim>
+            //{
+            //    new Claim(JwtRegisteredClaimNames.Email, admin.EMAIL),
+            //    //new Claim(JwtRegisteredClaimNames.NameId, admin.ID_ADMIN)
+            //};
 
-            foreach (var role in roles)
-            {
-                if (!role.Contains("NoRoles"))
-                    claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
-            }
+            //foreach (var role in roles)
+            //{
+            //    if (!role.Contains("NoRoles"))
+            //        claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
+            //}
+
+            var resourceJson = JsonSerializer.Serialize(resource);
+            var claims = new List<Claim>();
+            claims.Add(new Claim("MenuResource", resourceJson));
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 

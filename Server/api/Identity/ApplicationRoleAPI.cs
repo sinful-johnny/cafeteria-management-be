@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Identity
 {
-    [Table("AspNetRoleMenu")]
-    public class ApplicationRoleMenu
+    [Table("AspNetRoleAPI")]
+    public class ApplicationRoleAPI
     {
-        public ApplicationRoleMenu()
+        public ApplicationRoleAPI()
         {
-            Permissions = new HashSet<MenuPermission>();
+            Permissions = new HashSet<APIPermission>();
         }
 
         [Key, Column(Order = 1), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,11 +19,12 @@ namespace api.Identity
         public virtual string RoleId { get; set; }
 
         [Column(Order = 3)]
-        public virtual int MenuId { get; set; }
+        public virtual int ApiId { get; set; }
 
         public virtual ApplicationRole Role { get; set; }
-        public virtual MenuItem MenuItem { get; set; }
-        public ICollection<MenuPermission> Permissions { get; set; }
+
+        public virtual ApplicationAPI API { get; set; }
+        public ICollection<APIPermission> Permissions { get; set; }
 
     }
 }

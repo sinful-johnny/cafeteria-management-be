@@ -1,8 +1,8 @@
-﻿using api.Data;
-using api.Interfaces;
+﻿using api.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using CafeteriaDB;
+using api.Identity;
 
 namespace EFTut.Repository
 {

@@ -189,15 +189,15 @@ BEGIN
         -- Insert the new admin record with the generated ID and hashed password
         BEGIN TRY
 
-            EXEC sp_addlogin @Email, @PASSWORD;
-            declare @cmd varchar(200);
-            set @cmd = ' 
+            -- EXEC sp_addlogin @Email, @PASSWORD;
+            -- declare @cmd varchar(200);
+            -- set @cmd = ' 
 
-		                USE cafeteria_DB
-		                CREATE USER [' + @NewID + '] FOR LOGIN '+ '[' + @Email + ']';
-            EXEC (@cmd);
+		    --             USE cafeteria_DB
+		    --             CREATE USER [' + @NewID + '] FOR LOGIN '+ '[' + @Email + ']';
+            -- EXEC (@cmd);
 
-            EXEC sp_addrolemember 'ADMIN', @NewID;
+            -- EXEC sp_addrolemember 'ADMIN', @NewID;
             INSERT INTO ADMIN (ID_ADMIN, EMAIL, PASSWORDHASH, SALT, CREATED_AT, UPDATE_AT)
             VALUES (@NewID, @Email, @PasswordHash, @Salt, GETDATE(), GETDATE());
 
