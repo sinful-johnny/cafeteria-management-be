@@ -38,6 +38,8 @@ namespace api.Identity
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<ApplicationRoleMenu> RoleMenus { get; set; }
         public DbSet<ApplicationAPI> APIs { get; set; }
+        public DbSet<ApplicationRoleAPI> RoleAPIs { get; set; }
+        public DbSet<APIPermission> ApiPermissions { get; set; }
 
         //View for Identity
         public DbSet<V_Menu> VMenus { get; set; }
@@ -78,7 +80,7 @@ namespace api.Identity
             {
                 item.ToTable("AspNetAPI");
 
-                item.HasMany(t => t.RoleMenus)
+                item.HasMany(t => t.RoleApis)
                     .WithOne(u => u.API)
                     .HasForeignKey(r => r.ApiId)
                     .OnDelete(DeleteBehavior.NoAction);
@@ -95,21 +97,6 @@ namespace api.Identity
                 item.HasMany(t => t.RoleMenus)
                     .WithOne(u => u.MenuItem)
                     .HasForeignKey(r => r.MenuId)
-                    .OnDelete(DeleteBehavior.NoAction);
-            });
-
-            modelBuilder.Entity<ApplicationRoleMenu>(roleMenu =>
-            {
-                roleMenu.ToTable("AspNetRoleMenu");
-
-                roleMenu.HasOne(o => o.Role)
-                    .WithMany(u => u.RoleMenus)
-                    .HasForeignKey(e => e.RoleId)
-                    .OnDelete(DeleteBehavior.NoAction);
-
-                roleMenu.HasOne(o => o.MenuItem)
-                    .WithMany(u => u.RoleMenus)
-                    .HasForeignKey(e => e.MenuId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
 
