@@ -459,6 +459,23 @@ namespace api.Migrations
                     b.ToTable("userRoles");
                 });
 
+            modelBuilder.Entity("api.Identity.APIPermission", b =>
+                {
+                    b.Property<int>("RoleApiId")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int")
+                        .HasColumnOrder(2);
+
+                    b.HasKey("RoleApiId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("ApiPermission", (string)null);
+                });
+
             modelBuilder.Entity("api.Identity.ApplicationAPI", b =>
                 {
                     b.Property<int>("Id")
@@ -503,7 +520,7 @@ namespace api.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("api.Identity.ApplicationRoleMenu", b =>
+            modelBuilder.Entity("api.Identity.ApplicationRoleAPI", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -513,10 +530,6 @@ namespace api.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ApiId")
-                        .HasColumnType("int")
-                        .HasColumnOrder(4);
-
-                    b.Property<int>("MenuId")
                         .HasColumnType("int")
                         .HasColumnOrder(3);
 
@@ -529,11 +542,36 @@ namespace api.Migrations
 
                     b.HasIndex("ApiId");
 
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleAPI");
+                });
+
+            modelBuilder.Entity("api.Identity.ApplicationRoleMenu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MenuId")
+                        .HasColumnType("int")
+                        .HasColumnOrder(3);
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnOrder(2);
+
+                    b.HasKey("Id");
+
                     b.HasIndex("MenuId");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleMenu", (string)null);
+                    b.ToTable("AspNetRoleMenu");
                 });
 
             modelBuilder.Entity("api.Identity.ApplicationUser", b =>
@@ -778,14 +816,46 @@ namespace api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("api.Identity.ApplicationRoleMenu", b =>
+            modelBuilder.Entity("api.Identity.APIPermission", b =>
+                {
+                    b.HasOne("api.Identity.Permission", "Permission")
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Identity.ApplicationRoleAPI", "RoleApi")
+                        .WithMany("Permissions")
+                        .HasForeignKey("RoleApiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("RoleApi");
+                });
+
+            modelBuilder.Entity("api.Identity.ApplicationRoleAPI", b =>
                 {
                     b.HasOne("api.Identity.ApplicationAPI", "API")
-                        .WithMany("RoleMenus")
+                        .WithMany("RoleApis")
                         .HasForeignKey("ApiId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("api.Identity.ApplicationRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("API");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("api.Identity.ApplicationRoleMenu", b =>
+                {
                     b.HasOne("api.Identity.MenuItem", "MenuItem")
                         .WithMany("RoleMenus")
                         .HasForeignKey("MenuId")
@@ -793,12 +863,10 @@ namespace api.Migrations
                         .IsRequired();
 
                     b.HasOne("api.Identity.ApplicationRole", "Role")
-                        .WithMany("RoleMenus")
+                        .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("API");
 
                     b.Navigation("MenuItem");
 
@@ -865,12 +933,12 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Identity.ApplicationAPI", b =>
                 {
-                    b.Navigation("RoleMenus");
+                    b.Navigation("RoleApis");
                 });
 
-            modelBuilder.Entity("api.Identity.ApplicationRole", b =>
+            modelBuilder.Entity("api.Identity.ApplicationRoleAPI", b =>
                 {
-                    b.Navigation("RoleMenus");
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("api.Identity.ApplicationRoleMenu", b =>

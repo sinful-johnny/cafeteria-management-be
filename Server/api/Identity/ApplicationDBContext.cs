@@ -100,6 +100,13 @@ namespace api.Identity
                     .OnDelete(DeleteBehavior.NoAction);
             });
 
+            modelBuilder.Entity<APIPermission>(mp =>
+            {
+                mp.ToTable("ApiPermission");
+
+                mp.HasKey(l => new { l.RoleApiId, l.PermissionId });
+            });
+
             modelBuilder.Entity<MenuPermission>(mp =>
             {
                 mp.ToTable("MenuPermission");
