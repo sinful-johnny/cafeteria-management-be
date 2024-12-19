@@ -10,13 +10,10 @@
 namespace IdentityCafeteriaModel
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class V_Role_Menu
+    public partial class sp_TakePermission_From_UserAndApiAndRole_Result
     {
-        public string roleName { get; set; }
-        public int menuID { get; set; }
-        public int rolemenuID { get; set; }
-        public int permissionID { get; set; }
+        public string Role { get; set; }
+        public string Permission { get; set; }
     }
 }

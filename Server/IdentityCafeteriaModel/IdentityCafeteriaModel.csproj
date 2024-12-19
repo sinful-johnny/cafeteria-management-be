@@ -51,10 +51,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AspNetAPI.cs">
+      <DependentUpon>IdentityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="AspNetMenu.cs">
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="AspNetRole.cs">
+      <DependentUpon>IdentityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AspNetRoleAPI.cs">
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="AspNetRoleClaim.cs">
@@ -94,6 +100,9 @@
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="sp_TakePermission_From_UserAndApiAndRole_Result.cs">
+      <DependentUpon>IdentityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="V_Menu.cs">
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>
@@ -101,6 +110,12 @@
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="V_Role_Menu.cs">
+      <DependentUpon>IdentityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="V_TakePermission_From_UserAndApiAndRole.cs">
+      <DependentUpon>IdentityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="V_TakeRole_From_UserAndApi.cs">
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>

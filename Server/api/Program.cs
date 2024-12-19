@@ -19,6 +19,7 @@ using api.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using api.Models.AuthModels;
+using api.MiddleWare;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,6 +99,10 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 //})
 //.AddEntityFrameworkStores<ApplicationDBContext>(); //Entity Framework Stores
 
+//builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
+//    .AddEntityFrameworkStores<ApplicationDBContext>()
+//    .AddDefaultTokenProviders();
+
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDBContext>()
@@ -154,11 +159,13 @@ builder.Services.AddScoped<ITABLE_FOOD_Repository, TABLE_FOODs_repository>();
 
 //Identity Scope
 builder.Services.AddScoped<IMenuResource_Repository, MenuResource_repository>();
+builder.Services.AddScoped<IUser_Roles_repository, User_Roles_repository>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddSingleton<IAuthorizationHandler, MenuResourceService>();
+builder.Services.AddSingleton<IAuthorizationHandler, UserApiRolePermissionService>();
+builder.Services.AddScoped<IApiAuthentication_Repository, ApiAuthentication_repository>();
 
 var app = builder.Build();
 
@@ -171,6 +178,7 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpLogging();
 app.UseMiddleware<CustomLoggingMiddleware>();
+app.UseMiddleware<ParseTokenMiddleWare>();
 
 app.UseRouting(); 
 app.UseCors("AllowSpecificOrigins");

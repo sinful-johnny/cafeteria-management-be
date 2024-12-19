@@ -6,6 +6,7 @@ namespace api.Interfaces
 {
     public interface ITokenService
     {
-        public Task<string> CreateToken(MenuResource resource);
+        public Task<string> CreateToken(string UserName, IList<string> roles);
+        //public Task<>
     }
 }

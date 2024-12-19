@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using api.Dtos.Account;
 using api.Dtos.USER;
 using IdentityCafeteriaModel;
+using api.Models.AuthModels;
+using api.Models;
 
 namespace api.Identity
 {
@@ -30,6 +32,14 @@ namespace api.Identity
         //    var baseConnectionString = configuration.GetConnectionString("LoginConnection");
         //    _connectionString = BuildConnectionString(baseConnectionString, loginDto.EmailAddress, loginDto.Password);
         //}
+
+        //Entity for API Authentication
+        public DbSet<V_TakePermission_From_UserAndApiAndRole> V_TakePermission {  get; set; }
+        public DbSet<V_TakeRole_From_UserAndApi> V_TakeRole { get; set; }
+
+        public DbSet<UserRolesModel> userRolesModels { get; set; }
+
+        public DbSet<Menu> MenuModels { get; set; }
 
 
         //Entity for Identity
@@ -133,6 +143,12 @@ namespace api.Identity
                     .HasForeignKey(y => y.PermissionId);
             });
 
+            modelBuilder.Entity<V_TakeRole_From_UserAndApi>()
+                .HasKey(v => new { v.RoleName }); // Composite key for V_Menu
+
+            modelBuilder.Entity<V_TakePermission_From_UserAndApiAndRole>()
+                .HasKey(v => new { v.Permission }); // Composite key for V_Menu
+
             modelBuilder.Entity<V_Menu>()
                 .HasKey(v => new { v.menuID }); // Composite key for V_Menu
 
@@ -141,6 +157,9 @@ namespace api.Identity
 
             modelBuilder.Entity<V_Role_Menu>()
                 .HasKey(v => new { v.menuID, v.rolemenuID, v.permissionID }); // Composite key for V_Role_Menu
+            
+            modelBuilder.Entity<UserRolesModel>()
+                .HasKey(v => new { v.Role }); // Composite key for V_Role_Menu
 
             //Constraints for CafeteriaDB
 

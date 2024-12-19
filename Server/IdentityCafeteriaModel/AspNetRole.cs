@@ -19,6 +19,7 @@ namespace IdentityCafeteriaModel
         {
             this.AspNetRoleClaims = new HashSet<AspNetRoleClaim>();
             this.AspNetRoleMenus = new HashSet<AspNetRoleMenu>();
+            this.AspNetRoleMenus1 = new HashSet<AspNetRoleMenu>();
             this.AspNetUsers = new HashSet<AspNetUser>();
         }
     
@@ -31,6 +32,8 @@ namespace IdentityCafeteriaModel
         public virtual ICollection<AspNetRoleClaim> AspNetRoleClaims { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetRoleMenu> AspNetRoleMenus { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AspNetRoleMenu> AspNetRoleMenus1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetUser> AspNetUsers { get; set; }
     }

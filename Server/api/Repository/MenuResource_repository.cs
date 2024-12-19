@@ -13,6 +13,17 @@ namespace api.Repository
         {
             _context = context;
         }
+        public async Task<List<V_Menu>> getAllMenu()
+        {
+            var resultTablesOfMenu = await _context.VMenus
+                .FromSqlRaw("""
+                                select *
+                                From DBO.V_Menu
+                            """)
+                .ToListAsync();
+
+            return resultTablesOfMenu;
+        }
         public async Task<(List<V_Menu>, List<V_Role_Menu>, List<V_Permission_RoleMenu>)> getAllMenuResource()
         {
             var resultTablesOfMenu = await _context.VMenus

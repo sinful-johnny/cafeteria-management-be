@@ -25,7 +25,9 @@ namespace IdentityCafeteriaModel
         public int MenuId { get; set; }
     
         public virtual AspNetMenu AspNetMenu { get; set; }
+        public virtual AspNetMenu AspNetMenu1 { get; set; }
         public virtual AspNetRole AspNetRole { get; set; }
+        public virtual AspNetRole AspNetRole1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Permission> Permissions { get; set; }
     }

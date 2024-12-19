@@ -12,21 +12,20 @@ namespace IdentityCafeteriaModel
     using System;
     using System.Collections.Generic;
     
-    public partial class Permission
+    public partial class AspNetRoleAPI
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Permission()
+        public AspNetRoleAPI()
         {
-            this.AspNetRoleAPIs = new HashSet<AspNetRoleAPI>();
-            this.AspNetRoleMenus = new HashSet<AspNetRoleMenu>();
+            this.Permissions = new HashSet<Permission>();
         }
     
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string RoleId { get; set; }
+        public int ApiId { get; set; }
     
+        public virtual AspNetAPI AspNetAPI { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AspNetRoleAPI> AspNetRoleAPIs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AspNetRoleMenu> AspNetRoleMenus { get; set; }
+        public virtual ICollection<Permission> Permissions { get; set; }
     }
 }

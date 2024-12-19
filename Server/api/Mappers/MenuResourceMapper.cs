@@ -1,6 +1,7 @@
 ﻿using api.Dtos.FOOD;
 using api.Dtos.FOOD_TABLE;
 using api.Dtos.MenuResource;
+using api.Models;
 using IdentityCafeteriaModel;
 
 namespace api.Mappers
@@ -15,6 +16,15 @@ namespace api.Mappers
                 MenuName = Menu.menuName,
                 OwnerRoles = rolePermissions,
                 children = MenuChildrens
+            };
+        }
+
+        public static Menu ToMenuModel(this V_Menu Menu)
+        {
+            return new Menu
+            {
+                Id = Menu.menuID,
+                MenuName = Menu.menuName,
             };
         }
 

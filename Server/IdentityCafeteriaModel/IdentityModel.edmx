@@ -4,7 +4,22 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="cafeteriaDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="cafeteriaDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ApiPermission">
+          <Key>
+            <PropertyRef Name="RoleApiId" />
+            <PropertyRef Name="PermissionId" />
+          </Key>
+          <Property Name="RoleApiId" Type="int" Nullable="false" />
+          <Property Name="PermissionId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetAPI">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="API" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="AspNetMenu">
           <Key>
             <PropertyRef Name="Id" />
@@ -15,6 +30,14 @@
           <Property Name="ParentId" Type="int" />
           <Property Name="Icon" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Url" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetRoleAPI">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="ApiId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="AspNetRoleClaims">
           <Key>
@@ -132,9 +155,11 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Permission_RoleMenu' does not ha
           <Key>
             <PropertyRef Name="rolemenuID" />
             <PropertyRef Name="permissionName" />
+            <PropertyRef Name="permissionID" />
           </Key>
           <Property Name="rolemenuID" Type="int" Nullable="false" />
           <Property Name="permissionName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="permissionID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -142,11 +167,63 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <Key>
             <PropertyRef Name="menuID" />
             <PropertyRef Name="rolemenuID" />
+            <PropertyRef Name="permissionID" />
           </Key>
           <Property Name="roleName" Type="nvarchar" MaxLength="256" />
           <Property Name="menuID" Type="int" Nullable="false" />
           <Property Name="rolemenuID" Type="int" Nullable="false" />
+          <Property Name="permissionID" Type="int" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'cafeteriaDB.dbo.V_TakePermission_From_UserAndApiAndRole' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="V_TakePermission_From_UserAndApiAndRole">
+          <Key>
+            <PropertyRef Name="Permission" />
+            <PropertyRef Name="API" />
+          </Key>
+          <Property Name="Permission" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="API" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="V_TakeRole_From_UserAndApi">
+          <Key>
+            <PropertyRef Name="API" />
+          </Key>
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="API" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_ApiPermission_AspNetRoleAPI_RoleApiId">
+          <End Role="AspNetRoleAPI" Type="Self.AspNetRoleAPI" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ApiPermission" Type="Self.ApiPermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetRoleAPI">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ApiPermission">
+              <PropertyRef Name="RoleApiId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ApiPermission_Permission_PermissionId">
+          <End Role="Permission" Type="Self.Permission" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ApiPermission" Type="Self.ApiPermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ApiPermission">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_AspNetMenu_AspNetMenu_ParentId">
           <End Role="AspNetMenu" Type="Self.AspNetMenu" Multiplicity="0..1" />
           <End Role="AspNetMenu1" Type="Self.AspNetMenu" Multiplicity="*" />
@@ -156,6 +233,18 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
             </Principal>
             <Dependent Role="AspNetMenu1">
               <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AspNetRoleAPI_AspNetAPI_ApiId">
+          <End Role="AspNetAPI" Type="Self.AspNetAPI" Multiplicity="1" />
+          <End Role="AspNetRoleAPI" Type="Self.AspNetRoleAPI" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetAPI">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetRoleAPI">
+              <PropertyRef Name="ApiId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -295,8 +384,44 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="IX_AspNetRoleMenu_MenuId">
+          <End Role="AspNetMenu" Type="Self.AspNetMenu" Multiplicity="1" />
+          <End Role="AspNetRoleMenu" Type="Self.AspNetRoleMenu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetMenu">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetRoleMenu">
+              <PropertyRef Name="MenuId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="IX_AspNetRoleMenu_RoleId">
+          <End Role="AspNetRoles" Type="Self.AspNetRoles" Multiplicity="1" />
+          <End Role="AspNetRoleMenu" Type="Self.AspNetRoleMenu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetRoleMenu">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="sp_TakePermission_From_UserAndApiAndRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Api" Type="nvarchar" Mode="In" />
+          <Parameter Name="Role" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_TakeRole_From_UserAndApi" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Api" Type="nvarchar" Mode="In" />
+        </Function>
         <EntityContainer Name="cafeteriaDBModelStoreContainer">
+          <EntitySet Name="ApiPermission" EntityType="Self.ApiPermission" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetAPI" EntityType="Self.AspNetAPI" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetMenu" EntityType="Self.AspNetMenu" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetRoleAPI" EntityType="Self.AspNetRoleAPI" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoleClaims" EntityType="Self.AspNetRoleClaims" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoleMenu" EntityType="Self.AspNetRoleMenu" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
@@ -317,19 +442,48 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <EntitySet Name="V_Permission_RoleMenu" EntityType="Self.V_Permission_RoleMenu" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [V_Permission_RoleMenu].[rolemenuID] AS [rolemenuID], 
-    [V_Permission_RoleMenu].[permissionName] AS [permissionName]
+    [V_Permission_RoleMenu].[permissionName] AS [permissionName], 
+    [V_Permission_RoleMenu].[permissionID] AS [permissionID]
     FROM [dbo].[V_Permission_RoleMenu] AS [V_Permission_RoleMenu]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="V_Role_Menu" EntityType="Self.V_Role_Menu" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [V_Role_Menu].[roleName] AS [roleName], 
     [V_Role_Menu].[menuID] AS [menuID], 
-    [V_Role_Menu].[rolemenuID] AS [rolemenuID]
+    [V_Role_Menu].[rolemenuID] AS [rolemenuID], 
+    [V_Role_Menu].[permissionID] AS [permissionID]
     FROM [dbo].[V_Role_Menu] AS [V_Role_Menu]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="V_TakePermission_From_UserAndApiAndRole" EntityType="Self.V_TakePermission_From_UserAndApiAndRole" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [V_TakePermission_From_UserAndApiAndRole].[Permission] AS [Permission], 
+    [V_TakePermission_From_UserAndApiAndRole].[UserName] AS [UserName], 
+    [V_TakePermission_From_UserAndApiAndRole].[API] AS [API], 
+    [V_TakePermission_From_UserAndApiAndRole].[RoleName] AS [RoleName]
+    FROM [dbo].[V_TakePermission_From_UserAndApiAndRole] AS [V_TakePermission_From_UserAndApiAndRole]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="V_TakeRole_From_UserAndApi" EntityType="Self.V_TakeRole_From_UserAndApi" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [V_TakeRole_From_UserAndApi].[RoleName] AS [RoleName], 
+    [V_TakeRole_From_UserAndApi].[UserName] AS [UserName], 
+    [V_TakeRole_From_UserAndApi].[API] AS [API]
+    FROM [dbo].[V_TakeRole_From_UserAndApi] AS [V_TakeRole_From_UserAndApi]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_ApiPermission_AspNetRoleAPI_RoleApiId" Association="Self.FK_ApiPermission_AspNetRoleAPI_RoleApiId">
+            <End Role="AspNetRoleAPI" EntitySet="AspNetRoleAPI" />
+            <End Role="ApiPermission" EntitySet="ApiPermission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ApiPermission_Permission_PermissionId" Association="Self.FK_ApiPermission_Permission_PermissionId">
+            <End Role="Permission" EntitySet="Permission" />
+            <End Role="ApiPermission" EntitySet="ApiPermission" />
+          </AssociationSet>
           <AssociationSet Name="FK_AspNetMenu_AspNetMenu_ParentId" Association="Self.FK_AspNetMenu_AspNetMenu_ParentId">
             <End Role="AspNetMenu" EntitySet="AspNetMenu" />
             <End Role="AspNetMenu1" EntitySet="AspNetMenu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AspNetRoleAPI_AspNetAPI_ApiId" Association="Self.FK_AspNetRoleAPI_AspNetAPI_ApiId">
+            <End Role="AspNetAPI" EntitySet="AspNetAPI" />
+            <End Role="AspNetRoleAPI" EntitySet="AspNetRoleAPI" />
           </AssociationSet>
           <AssociationSet Name="FK_AspNetRoleClaims_AspNetRoles_RoleId" Association="Self.FK_AspNetRoleClaims_AspNetRoles_RoleId">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
@@ -371,12 +525,27 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
             <End Role="Permission" EntitySet="Permission" />
             <End Role="MenuPermission" EntitySet="MenuPermission" />
           </AssociationSet>
+          <AssociationSet Name="IX_AspNetRoleMenu_MenuId" Association="Self.IX_AspNetRoleMenu_MenuId">
+            <End Role="AspNetMenu" EntitySet="AspNetMenu" />
+            <End Role="AspNetRoleMenu" EntitySet="AspNetRoleMenu" />
+          </AssociationSet>
+          <AssociationSet Name="IX_AspNetRoleMenu_RoleId" Association="Self.IX_AspNetRoleMenu_RoleId">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetRoleMenu" EntitySet="AspNetRoleMenu" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="cafeteriaDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="AspNetAPI">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="API" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetRoleAPIs" Relationship="Self.FK_AspNetRoleAPI_AspNetAPI_ApiId" FromRole="AspNetAPI" ToRole="AspNetRoleAPI" />
+        </EntityType>
         <EntityType Name="AspNetMenu">
           <Key>
             <PropertyRef Name="Id" />
@@ -390,6 +559,17 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <NavigationProperty Name="AspNetMenu1" Relationship="Self.FK_AspNetMenu_AspNetMenu_ParentId" FromRole="AspNetMenu" ToRole="AspNetMenu1" />
           <NavigationProperty Name="AspNetMenu2" Relationship="Self.FK_AspNetMenu_AspNetMenu_ParentId" FromRole="AspNetMenu1" ToRole="AspNetMenu" />
           <NavigationProperty Name="AspNetRoleMenus" Relationship="Self.FK_AspNetRoleMenu_AspNetMenu_MenuId" FromRole="AspNetMenu" ToRole="AspNetRoleMenu" />
+          <NavigationProperty Name="AspNetRoleMenus1" Relationship="Self.IX_AspNetRoleMenu_MenuId" FromRole="AspNetMenu" ToRole="AspNetRoleMenu" />
+        </EntityType>
+        <EntityType Name="AspNetRoleAPI">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ApiId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AspNetAPI" Relationship="Self.FK_AspNetRoleAPI_AspNetAPI_ApiId" FromRole="AspNetRoleAPI" ToRole="AspNetAPI" />
+          <NavigationProperty Name="Permissions" Relationship="Self.ApiPermission" FromRole="AspNetRoleAPI" ToRole="Permission" />
         </EntityType>
         <EntityType Name="AspNetRoleClaim">
           <Key>
@@ -409,7 +589,9 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <Property Name="RoleId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="MenuId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="AspNetMenu" Relationship="Self.FK_AspNetRoleMenu_AspNetMenu_MenuId" FromRole="AspNetRoleMenu" ToRole="AspNetMenu" />
+          <NavigationProperty Name="AspNetMenu1" Relationship="Self.IX_AspNetRoleMenu_MenuId" FromRole="AspNetRoleMenu" ToRole="AspNetMenu" />
           <NavigationProperty Name="AspNetRole" Relationship="Self.FK_AspNetRoleMenu_AspNetRoles_RoleId" FromRole="AspNetRoleMenu" ToRole="AspNetRoles" />
+          <NavigationProperty Name="AspNetRole1" Relationship="Self.IX_AspNetRoleMenu_RoleId" FromRole="AspNetRoleMenu" ToRole="AspNetRoles" />
           <NavigationProperty Name="Permissions" Relationship="Self.MenuPermission" FromRole="AspNetRoleMenu" ToRole="Permission" />
         </EntityType>
         <EntityType Name="AspNetRole">
@@ -422,6 +604,7 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <Property Name="ConcurrencyStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetRoleClaims" Relationship="Self.FK_AspNetRoleClaims_AspNetRoles_RoleId" FromRole="AspNetRoles" ToRole="AspNetRoleClaims" />
           <NavigationProperty Name="AspNetRoleMenus" Relationship="Self.FK_AspNetRoleMenu_AspNetRoles_RoleId" FromRole="AspNetRoles" ToRole="AspNetRoleMenu" />
+          <NavigationProperty Name="AspNetRoleMenus1" Relationship="Self.IX_AspNetRoleMenu_RoleId" FromRole="AspNetRoles" ToRole="AspNetRoleMenu" />
           <NavigationProperty Name="AspNetUsers" Relationship="Self.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUserClaim">
@@ -487,6 +670,7 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetRoleAPIs" Relationship="Self.ApiPermission" FromRole="Permission" ToRole="AspNetRoleAPI" />
           <NavigationProperty Name="AspNetRoleMenus" Relationship="Self.MenuPermission" FromRole="Permission" ToRole="AspNetRoleMenu" />
         </EntityType>
         <EntityType Name="V_Menu">
@@ -502,19 +686,35 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <Key>
             <PropertyRef Name="rolemenuID" />
             <PropertyRef Name="permissionName" />
+            <PropertyRef Name="permissionID" />
           </Key>
           <Property Name="rolemenuID" Type="Int32" Nullable="false" />
           <Property Name="permissionName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="permissionID" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="V_Role_Menu">
           <Key>
             <PropertyRef Name="menuID" />
             <PropertyRef Name="rolemenuID" />
+            <PropertyRef Name="permissionID" />
           </Key>
           <Property Name="roleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="menuID" Type="Int32" Nullable="false" />
           <Property Name="rolemenuID" Type="Int32" Nullable="false" />
+          <Property Name="permissionID" Type="Int32" Nullable="false" />
         </EntityType>
+        <Association Name="FK_AspNetRoleAPI_AspNetAPI_ApiId">
+          <End Role="AspNetAPI" Type="Self.AspNetAPI" Multiplicity="1" />
+          <End Role="AspNetRoleAPI" Type="Self.AspNetRoleAPI" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetAPI">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetRoleAPI">
+              <PropertyRef Name="ApiId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_AspNetMenu_AspNetMenu_ParentId">
           <End Role="AspNetMenu" Type="Self.AspNetMenu" Multiplicity="0..1" />
           <End Role="AspNetMenu1" Type="Self.AspNetMenu" Multiplicity="*" />
@@ -528,6 +728,18 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_AspNetRoleMenu_AspNetMenu_MenuId">
+          <End Role="AspNetMenu" Type="Self.AspNetMenu" Multiplicity="1" />
+          <End Role="AspNetRoleMenu" Type="Self.AspNetRoleMenu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetMenu">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetRoleMenu">
+              <PropertyRef Name="MenuId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="IX_AspNetRoleMenu_MenuId">
           <End Role="AspNetMenu" Type="Self.AspNetMenu" Multiplicity="1" />
           <End Role="AspNetRoleMenu" Type="Self.AspNetRoleMenu" Multiplicity="*" />
           <ReferentialConstraint>
@@ -554,6 +766,18 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_AspNetRoleMenu_AspNetRoles_RoleId">
+          <End Role="AspNetRoles" Type="Self.AspNetRole" Multiplicity="1" />
+          <End Role="AspNetRoleMenu" Type="Self.AspNetRoleMenu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetRoleMenu">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="IX_AspNetRoleMenu_RoleId">
           <End Role="AspNetRoles" Type="Self.AspNetRole" Multiplicity="1" />
           <End Role="AspNetRoleMenu" Type="Self.AspNetRoleMenu" Multiplicity="*" />
           <ReferentialConstraint>
@@ -607,6 +831,10 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="ApiPermission">
+          <End Role="AspNetRoleAPI" Type="Self.AspNetRoleAPI" Multiplicity="*" />
+          <End Role="Permission" Type="Self.Permission" Multiplicity="*" />
+        </Association>
         <Association Name="AspNetUserRoles">
           <End Role="AspNetRoles" Type="Self.AspNetRole" Multiplicity="*" />
           <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="*" />
@@ -615,8 +843,10 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <End Role="AspNetRoleMenu" Type="Self.AspNetRoleMenu" Multiplicity="*" />
           <End Role="Permission" Type="Self.Permission" Multiplicity="*" />
         </Association>
-        <EntityContainer Name="cafeteriaDBEntities1" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="cafeteriaDBEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AspNetAPIs" EntityType="Self.AspNetAPI" />
           <EntitySet Name="AspNetMenus" EntityType="Self.AspNetMenu" />
+          <EntitySet Name="AspNetRoleAPIs" EntityType="Self.AspNetRoleAPI" />
           <EntitySet Name="AspNetRoleClaims" EntityType="Self.AspNetRoleClaim" />
           <EntitySet Name="AspNetRoleMenus" EntityType="Self.AspNetRoleMenu" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRole" />
@@ -628,6 +858,10 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <EntitySet Name="V_Menu" EntityType="Self.V_Menu" />
           <EntitySet Name="V_Permission_RoleMenu" EntityType="Self.V_Permission_RoleMenu" />
           <EntitySet Name="V_Role_Menu" EntityType="Self.V_Role_Menu" />
+          <AssociationSet Name="FK_AspNetRoleAPI_AspNetAPI_ApiId" Association="Self.FK_AspNetRoleAPI_AspNetAPI_ApiId">
+            <End Role="AspNetAPI" EntitySet="AspNetAPIs" />
+            <End Role="AspNetRoleAPI" EntitySet="AspNetRoleAPIs" />
+          </AssociationSet>
           <AssociationSet Name="FK_AspNetMenu_AspNetMenu_ParentId" Association="Self.FK_AspNetMenu_AspNetMenu_ParentId">
             <End Role="AspNetMenu" EntitySet="AspNetMenus" />
             <End Role="AspNetMenu1" EntitySet="AspNetMenus" />
@@ -636,11 +870,19 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
             <End Role="AspNetMenu" EntitySet="AspNetMenus" />
             <End Role="AspNetRoleMenu" EntitySet="AspNetRoleMenus" />
           </AssociationSet>
+          <AssociationSet Name="IX_AspNetRoleMenu_MenuId" Association="Self.IX_AspNetRoleMenu_MenuId">
+            <End Role="AspNetMenu" EntitySet="AspNetMenus" />
+            <End Role="AspNetRoleMenu" EntitySet="AspNetRoleMenus" />
+          </AssociationSet>
           <AssociationSet Name="FK_AspNetRoleClaims_AspNetRoles_RoleId" Association="Self.FK_AspNetRoleClaims_AspNetRoles_RoleId">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetRoleClaims" EntitySet="AspNetRoleClaims" />
           </AssociationSet>
           <AssociationSet Name="FK_AspNetRoleMenu_AspNetRoles_RoleId" Association="Self.FK_AspNetRoleMenu_AspNetRoles_RoleId">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetRoleMenu" EntitySet="AspNetRoleMenus" />
+          </AssociationSet>
+          <AssociationSet Name="IX_AspNetRoleMenu_RoleId" Association="Self.IX_AspNetRoleMenu_RoleId">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetRoleMenu" EntitySet="AspNetRoleMenus" />
           </AssociationSet>
@@ -656,6 +898,10 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserTokens" EntitySet="AspNetUserTokens" />
           </AssociationSet>
+          <AssociationSet Name="ApiPermission" Association="Self.ApiPermission">
+            <End Role="AspNetRoleAPI" EntitySet="AspNetRoleAPIs" />
+            <End Role="Permission" EntitySet="Permissions" />
+          </AssociationSet>
           <AssociationSet Name="AspNetUserRoles" Association="Self.AspNetUserRoles">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -664,13 +910,54 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
             <End Role="AspNetRoleMenu" EntitySet="AspNetRoleMenus" />
             <End Role="Permission" EntitySet="Permissions" />
           </AssociationSet>
+          <FunctionImport Name="sp_TakePermission_From_UserAndApiAndRole" ReturnType="Collection(cafeteriaDBModel.sp_TakePermission_From_UserAndApiAndRole_Result)">
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Api" Mode="In" Type="String" />
+            <Parameter Name="Role" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_TakeRole_From_UserAndApi" ReturnType="Collection(String)">
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Api" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="V_TakePermission_From_UserAndApiAndRole" EntityType="cafeteriaDBModel.V_TakePermission_From_UserAndApiAndRole" />
+          <EntitySet Name="V_TakeRole_From_UserAndApi" EntityType="cafeteriaDBModel.V_TakeRole_From_UserAndApi" />
         </EntityContainer>
+        <ComplexType Name="sp_TakePermission_From_UserAndApiAndRole_Result">
+          <Property Type="String" Name="Role" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="Permission" Nullable="false" MaxLength="50" />
+        </ComplexType>
+        <EntityType Name="V_TakePermission_From_UserAndApiAndRole">
+          <Key>
+            <PropertyRef Name="Permission" />
+            <PropertyRef Name="API" />
+          </Key>
+          <Property Name="Permission" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="API" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="V_TakeRole_From_UserAndApi">
+          <Key>
+            <PropertyRef Name="API" />
+          </Key>
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="API" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="cafeteriaDBModelStoreContainer" CdmEntityContainer="cafeteriaDBEntities1">
+        <EntityContainerMapping StorageEntityContainer="cafeteriaDBModelStoreContainer" CdmEntityContainer="cafeteriaDBEntities2">
+          <EntitySetMapping Name="AspNetAPIs">
+            <EntityTypeMapping TypeName="cafeteriaDBModel.AspNetAPI">
+              <MappingFragment StoreEntitySet="AspNetAPI">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="API" ColumnName="API" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="AspNetMenus">
             <EntityTypeMapping TypeName="cafeteriaDBModel.AspNetMenu">
               <MappingFragment StoreEntitySet="AspNetMenu">
@@ -680,6 +967,15 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Icon" ColumnName="Icon" />
                 <ScalarProperty Name="Url" ColumnName="Url" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetRoleAPIs">
+            <EntityTypeMapping TypeName="cafeteriaDBModel.AspNetRoleAPI">
+              <MappingFragment StoreEntitySet="AspNetRoleAPI">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="ApiId" ColumnName="ApiId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -785,6 +1081,7 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
               <MappingFragment StoreEntitySet="V_Permission_RoleMenu">
                 <ScalarProperty Name="rolemenuID" ColumnName="rolemenuID" />
                 <ScalarProperty Name="permissionName" ColumnName="permissionName" />
+                <ScalarProperty Name="permissionID" ColumnName="permissionID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -794,9 +1091,18 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
                 <ScalarProperty Name="roleName" ColumnName="roleName" />
                 <ScalarProperty Name="menuID" ColumnName="menuID" />
                 <ScalarProperty Name="rolemenuID" ColumnName="rolemenuID" />
+                <ScalarProperty Name="permissionID" ColumnName="permissionID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <AssociationSetMapping Name="ApiPermission" TypeName="cafeteriaDBModel.ApiPermission" StoreEntitySet="ApiPermission">
+            <EndProperty Name="AspNetRoleAPI">
+              <ScalarProperty Name="Id" ColumnName="RoleApiId" />
+            </EndProperty>
+            <EndProperty Name="Permission">
+              <ScalarProperty Name="Id" ColumnName="PermissionId" />
+            </EndProperty>
+          </AssociationSetMapping>
           <AssociationSetMapping Name="AspNetUserRoles" TypeName="cafeteriaDBModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
             <EndProperty Name="AspNetRoles">
               <ScalarProperty Name="Id" ColumnName="RoleId" />
@@ -813,6 +1119,34 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
               <ScalarProperty Name="Id" ColumnName="PermissionId" />
             </EndProperty>
           </AssociationSetMapping>
+          <FunctionImportMapping FunctionImportName="sp_TakePermission_From_UserAndApiAndRole" FunctionName="cafeteriaDBModel.Store.sp_TakePermission_From_UserAndApiAndRole">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="cafeteriaDBModel.sp_TakePermission_From_UserAndApiAndRole_Result">
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="Permission" ColumnName="Permission" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_TakeRole_From_UserAndApi" FunctionName="cafeteriaDBModel.Store.sp_TakeRole_From_UserAndApi" />
+          <EntitySetMapping Name="V_TakePermission_From_UserAndApiAndRole">
+            <EntityTypeMapping TypeName="cafeteriaDBModel.V_TakePermission_From_UserAndApiAndRole">
+              <MappingFragment StoreEntitySet="V_TakePermission_From_UserAndApiAndRole">
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="API" ColumnName="API" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Permission" ColumnName="Permission" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="V_TakeRole_From_UserAndApi">
+            <EntityTypeMapping TypeName="cafeteriaDBModel.V_TakeRole_From_UserAndApi">
+              <MappingFragment StoreEntitySet="V_TakeRole_From_UserAndApi">
+                <ScalarProperty Name="API" ColumnName="API" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

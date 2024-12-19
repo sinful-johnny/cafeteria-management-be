@@ -16,6 +16,6 @@ namespace IdentityCafeteriaModel
     {
         public int rolemenuID { get; set; }
         public string permissionName { get; set; }
-        public int? permissionID { get; set; }
+        public int permissionID { get; set; }
     }
 }

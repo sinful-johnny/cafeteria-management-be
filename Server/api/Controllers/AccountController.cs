@@ -1,220 +1,61 @@
-﻿using api.Dtos.Account;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 using api.Interfaces;
-using api.Models.AuthModels;
-using CafeteriaDB;
-using Microsoft.AspNetCore.Mvc;
+using api.Identity;
 
 namespace api.Controllers
 {
-    [Route("api/account")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        //private readonly UserManager<AppUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ITokenService _tokenService;
-        private readonly IAdminRepository _adminRepo;
-        private readonly IUserService _userService;
 
-        public AccountController(IAdminRepository adminRepo, 
-            ITokenService tokenService, IUserService userService)
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            ITokenService tokenService)
         {
-            _adminRepo = adminRepo;
+            _userManager = userManager;
+            _signInManager = signInManager;
             _tokenService = tokenService;
-            _userService = userService;
         }
 
         [HttpPost("login")]
-
-        public async Task<IActionResult> Login (LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new { Message = "Invalid login request." });
 
-            var admin = new ADMIN
-            {
-                EMAIL = loginDto.EmailAddress
-            };
+            // Find the user by username
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user == null)
+                return Unauthorized(new { Message = "Invalid username or password." });
 
-            if (loginDto.Password == null)
-            {
-                return BadRequest(ModelState);
-            }
+            // Check the password
+            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+            if (!result.Succeeded)
+                return Unauthorized(new { Message = "Invalid username or password." });
 
-            string result = await _adminRepo.LoginAdminAsync(loginDto);
+            // Get user roles
+            var roles = await _userManager.GetRolesAsync(user);
 
-            if (result.Contains("Invalid email or password.") || result.Contains("Invalid email or password.") )
-                    return Unauthorized("Username not found or password incorrect");
+            // Generate the token
+            var token = await _tokenService.CreateToken(user.UserName, roles);
 
-            var menuResource = new MenuResource
-            {
-                MenuName = "MainMenu",
-                OwnerRoles = new List<RolePermission>
-    {
-        new RolePermission
-        {
-            RoleName = "Admin",
-            PermissionType = new List<string> { "Read", "Write", "Delete" }
-        },
-        new RolePermission
-        {
-            RoleName = "User",
-            PermissionType = new List<string> { "Read" }
-        }
-    },
-                children = new List<MenuResource>
-    {
-        new MenuResource
-        {
-            MenuName = "SubMenu1",
-            OwnerRoles = new List<RolePermission>
-            {
-                new RolePermission
-                {
-                    RoleName = "Admin",
-                    PermissionType = new List<string> { "Read", "Write" }
-                }
-            },
-            children = new List<MenuResource>
-            {
-                new MenuResource
-                {
-                    MenuName = "SubSubMenu1",
-                    OwnerRoles = new List<RolePermission>
-                    {
-                        new RolePermission
-                        {
-                            RoleName = "Admin",
-                            PermissionType = new List<string> { "Read" }
-                        }
-                    }
-                }
-            }
-        },
-        new MenuResource
-        {
-            MenuName = "SubMenu2",
-            OwnerRoles = new List<RolePermission>
-            {
-                new RolePermission
-                {
-                    RoleName = "User",
-                    PermissionType = new List<string> { "Read" }
-                }
-            }
+            // Return the token to the frontend
+            return Ok(new { Token = token });
         }
     }
-            };
 
-            return Ok(
-                new NewUserDto
-                {
-                    Email = admin.EMAIL,
-                    Token = await _tokenService.CreateToken(menuResource)
-                }
-            );
-        }
-
-        [HttpPost("register")]
-
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                var admin = new ADMIN
-                {
-                    EMAIL = registerDto.EmailAddress
-                };
-
-                if (registerDto.Password == null)
-                {
-                    return BadRequest(ModelState);
-                }
-
-
-                string result = await _adminRepo.RegisterAdminAsync(registerDto);
-
-                var menuResource = new MenuResource
-                {
-                    MenuName = "MainMenu",
-                    OwnerRoles = new List<RolePermission>
+    // Login request model
+    public class LoginModel
     {
-        new RolePermission
-        {
-            RoleName = "Admin",
-            PermissionType = new List<string> { "Read", "Write", "Delete" }
-        },
-        new RolePermission
-        {
-            RoleName = "User",
-            PermissionType = new List<string> { "Read" }
-        }
-    },
-                    children = new List<MenuResource>
-    {
-        new MenuResource
-        {
-            MenuName = "SubMenu1",
-            OwnerRoles = new List<RolePermission>
-            {
-                new RolePermission
-                {
-                    RoleName = "Admin",
-                    PermissionType = new List<string> { "Read", "Write" }
-                }
-            },
-            children = new List<MenuResource>
-            {
-                new MenuResource
-                {
-                    MenuName = "SubSubMenu1",
-                    OwnerRoles = new List<RolePermission>
-                    {
-                        new RolePermission
-                        {
-                            RoleName = "Admin",
-                            PermissionType = new List<string> { "Read" }
-                        }
-                    }
-                }
-            }
-        },
-        new MenuResource
-        {
-            MenuName = "SubMenu2",
-            OwnerRoles = new List<RolePermission>
-            {
-                new RolePermission
-                {
-                    RoleName = "User",
-                    PermissionType = new List<string> { "Read" }
-                }
-            }
-        }
-    }
-                };
-                if (result.Contains("User registered successfully"))
-                {
-                    return Ok
-                            (
-                                new NewUserDto
-                                {
-                                    Email = admin.EMAIL,
-                                    Token = await _tokenService.CreateToken(menuResource)
-                                }
-                            );
-                }
-                else
-                {
-                    return BadRequest(new { Message = result });
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
 }

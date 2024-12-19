@@ -3,20 +3,20 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace api.Service
 {
-    public class MenuResourceService : AuthorizationHandler<PolicyRequirementModel, MenuResource>
+    public class UserApiRolePermissionService : AuthorizationHandler<PolicyRequirementModel, UserApiRolePermission>
     {
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             PolicyRequirementModel requirement,
-            MenuResource resource)
+            UserApiRolePermission resource)
         {
             // Access the policy name
             var policyName = requirement.PolicyName; //RW; R;
 
             // Check if the user is in any of the roles that define ownership of the resource
-            if (resource.OwnerRoles.Any(
+            if (resource.Roles.Any(
                 role => context.User.IsInRole(role.RoleName)
-                && role.PermissionType.Any(p => p == policyName)
+                && role.Permissions.Any(p => p == policyName)
                 ))
             {
                 context.Succeed(requirement);
