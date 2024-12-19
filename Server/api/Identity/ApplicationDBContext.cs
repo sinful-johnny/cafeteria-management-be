@@ -39,7 +39,7 @@ namespace api.Identity
 
         public DbSet<UserRolesModel> userRolesModels { get; set; }
 
-        public DbSet<Menu> MenuModels { get; set; }
+        public DbSet<V_Role> RoleModels { get; set; }
 
 
         //Entity for Identity

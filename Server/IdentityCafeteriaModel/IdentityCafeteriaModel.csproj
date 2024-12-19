@@ -109,6 +109,9 @@
     <Compile Include="V_Permission_RoleMenu.cs">
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="V_Role.cs">
+      <DependentUpon>IdentityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="V_Role_Menu.cs">
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>

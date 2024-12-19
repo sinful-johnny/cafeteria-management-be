@@ -13,7 +13,7 @@ namespace api.Repository
         {
             _context = context;
         }
-        public async Task<List<V_Menu>> getAllMenu()
+        public async Task<List<V_Menu>> getAllMenus()
         {
             var resultTablesOfMenu = await _context.VMenus
                 .FromSqlRaw("""
@@ -48,6 +48,18 @@ namespace api.Repository
                 .ToListAsync();
 
             return (resultTablesOfMenu, resultTablesOfRoleMenu, resultTablesOfPermission);
+        }
+
+        public async Task<List<V_Role>> getAllRoles()
+        {
+            var resultTablesOfRoles = await _context.RoleModels
+                .FromSqlRaw("""
+                                select *
+                                From DBO.V_Role
+                            """)
+                .ToListAsync();
+
+            return resultTablesOfRoles;
         }
     }
 }

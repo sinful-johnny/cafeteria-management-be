@@ -43,8 +43,9 @@ namespace IdentityCafeteriaModel
         public virtual DbSet<V_Role_Menu> V_Role_Menu { get; set; }
         public virtual DbSet<V_TakePermission_From_UserAndApiAndRole> V_TakePermission_From_UserAndApiAndRole { get; set; }
         public virtual DbSet<V_TakeRole_From_UserAndApi> V_TakeRole_From_UserAndApi { get; set; }
+        public virtual DbSet<V_Role> V_Role { get; set; }
     
-        public virtual ObjectResult<sp_TakePermission_From_UserAndApiAndRole_Result> sp_TakePermission_From_UserAndApiAndRole(string userName, string api, string role)
+        public virtual ObjectResult<sp_TakePermission_From_UserAndApiAndRole_Result> sp_TakePermission_From_UserAndApiAndRole(string userName, string api)
         {
             var userNameParameter = userName != null ?
                 new ObjectParameter("UserName", userName) :
@@ -54,11 +55,7 @@ namespace IdentityCafeteriaModel
                 new ObjectParameter("Api", api) :
                 new ObjectParameter("Api", typeof(string));
     
-            var roleParameter = role != null ?
-                new ObjectParameter("Role", role) :
-                new ObjectParameter("Role", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_TakePermission_From_UserAndApiAndRole_Result>("sp_TakePermission_From_UserAndApiAndRole", userNameParameter, apiParameter, roleParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_TakePermission_From_UserAndApiAndRole_Result>("sp_TakePermission_From_UserAndApiAndRole", userNameParameter, apiParameter);
         }
     
         public virtual ObjectResult<string> sp_TakeRole_From_UserAndApi(string userName, string api)

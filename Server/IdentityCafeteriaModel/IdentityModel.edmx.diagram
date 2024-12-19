@@ -34,6 +34,7 @@
         <AssociationConnector Association="cafeteriaDBModel.MenuPermission" ManuallyRouted="false" />
         <EntityTypeShape EntityType="cafeteriaDBModel.V_TakePermission_From_UserAndApiAndRole" Width="2.875" PointX="7.375" PointY="7.75" />
         <EntityTypeShape EntityType="cafeteriaDBModel.V_TakeRole_From_UserAndApi" Width="1.5" PointX="9.375" PointY="5.75" />
+        <EntityTypeShape EntityType="cafeteriaDBModel.V_Role" Width="1.5" PointX="10.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

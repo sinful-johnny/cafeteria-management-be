@@ -8,26 +8,26 @@ using System.Text.Json;
 
 namespace api.Controllers
 {
-    [Route("api/Menu")]
+    [Route("api/Role")]
     [ApiController]
-    public class MenuController : ControllerBase
+    public class RoleController : ControllerBase
     {
         private readonly IMenuResource_Repository _tableMenuResouceRepo;
-        public MenuController(IMenuResource_Repository tableMenuResouceRepo)
+        public RoleController(IMenuResource_Repository tableMenuResouceRepo)
         {
             this._tableMenuResouceRepo = tableMenuResouceRepo;
         }
 
         [HttpGet]
         //[Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> GetAllMenu()
+        public async Task<IActionResult> GetAllRole()
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var menus = await _tableMenuResouceRepo.getAllMenus();
+            var roles = await _tableMenuResouceRepo.getAllRoles();
 
-            var menuModels = menus.Select(m => m.ToMenuModel());
+            var roleModels = roles.Select(r => r.ToRoleModel());
 
             // Serialize the object manually using JsonSerializer
             var jsonOptions = new JsonSerializerOptions
@@ -35,7 +35,7 @@ namespace api.Controllers
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Ensure camelCase naming for JSON
                 WriteIndented = true // Optional: Pretty-print JSON
             };
-            var jsonResult = JsonSerializer.Serialize(menuModels, jsonOptions);
+            var jsonResult = JsonSerializer.Serialize(roleModels, jsonOptions);
 
             return Content(jsonResult, "application/json");
         }

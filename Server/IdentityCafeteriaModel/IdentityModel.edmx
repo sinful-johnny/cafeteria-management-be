@@ -162,6 +162,16 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Permission_RoleMenu' does not ha
           <Property Name="permissionID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'cafeteriaDB.dbo.V_Role' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="V_Role">
+          <Key>
+            <PropertyRef Name="RoleID" />
+          </Key>
+          <Property Name="RoleID" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
+          <Property Name="UserCount" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="V_Role_Menu">
           <Key>
@@ -411,7 +421,6 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
         <Function Name="sp_TakePermission_From_UserAndApiAndRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="UserName" Type="nvarchar" Mode="In" />
           <Parameter Name="Api" Type="nvarchar" Mode="In" />
-          <Parameter Name="Role" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="sp_TakeRole_From_UserAndApi" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="UserName" Type="nvarchar" Mode="In" />
@@ -445,6 +454,13 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
     [V_Permission_RoleMenu].[permissionName] AS [permissionName], 
     [V_Permission_RoleMenu].[permissionID] AS [permissionID]
     FROM [dbo].[V_Permission_RoleMenu] AS [V_Permission_RoleMenu]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="V_Role" EntityType="Self.V_Role" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [V_Role].[RoleID] AS [RoleID], 
+    [V_Role].[RoleName] AS [RoleName], 
+    [V_Role].[UserCount] AS [UserCount]
+    FROM [dbo].[V_Role] AS [V_Role]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="V_Role_Menu" EntityType="Self.V_Role_Menu" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -913,7 +929,6 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
           <FunctionImport Name="sp_TakePermission_From_UserAndApiAndRole" ReturnType="Collection(cafeteriaDBModel.sp_TakePermission_From_UserAndApiAndRole_Result)">
             <Parameter Name="UserName" Mode="In" Type="String" />
             <Parameter Name="Api" Mode="In" Type="String" />
-            <Parameter Name="Role" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_TakeRole_From_UserAndApi" ReturnType="Collection(String)">
             <Parameter Name="UserName" Mode="In" Type="String" />
@@ -921,6 +936,7 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
           </FunctionImport>
           <EntitySet Name="V_TakePermission_From_UserAndApiAndRole" EntityType="cafeteriaDBModel.V_TakePermission_From_UserAndApiAndRole" />
           <EntitySet Name="V_TakeRole_From_UserAndApi" EntityType="cafeteriaDBModel.V_TakeRole_From_UserAndApi" />
+          <EntitySet Name="V_Role" EntityType="cafeteriaDBModel.V_Role" />
         </EntityContainer>
         <ComplexType Name="sp_TakePermission_From_UserAndApiAndRole_Result">
           <Property Type="String" Name="Role" Nullable="true" MaxLength="256" />
@@ -943,6 +959,14 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
           <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="API" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="V_Role">
+          <Key>
+            <PropertyRef Name="RoleID" />
+          </Key>
+          <Property Name="RoleID" Type="String" Nullable="false" MaxLength="450" FixedLength="false" Unicode="true" />
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="UserCount" Type="Int32" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1144,6 +1168,15 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
                 <ScalarProperty Name="API" ColumnName="API" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="V_Role">
+            <EntityTypeMapping TypeName="cafeteriaDBModel.V_Role">
+              <MappingFragment StoreEntitySet="V_Role">
+                <ScalarProperty Name="UserCount" ColumnName="UserCount" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleID" ColumnName="RoleID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

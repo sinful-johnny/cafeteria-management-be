@@ -24,7 +24,17 @@ namespace api.Mappers
             return new Menu
             {
                 Id = Menu.menuID,
-                MenuName = Menu.menuName,
+                MenuName = Menu.menuName
+            };
+        }
+
+        public static Role ToRoleModel(this V_Role Role)
+        {
+            return new Role
+            {
+                Id = Role.RoleID,
+                RoleName = Role.RoleName,
+                UserCount = Role.UserCount
             };
         }
 
