@@ -3,6 +3,7 @@ using api.Dtos.FOOD_TABLE;
 using api.Dtos.MenuResource;
 using api.Models;
 using IdentityCafeteriaModel;
+using System;
 
 namespace api.Mappers
 {
@@ -36,6 +37,74 @@ namespace api.Mappers
                 RoleName = Role.RoleName,
                 UserCount = Role.UserCount
             };
+        }
+
+        public static Perm ToRolePermModel(this V_Permission_RoleMenu V_Perm)
+        {
+            return new Perm
+            {
+                Id = V_Perm.permissionID,
+                PermName = V_Perm.permissionName
+            };
+        }
+
+        public static List<RoleMenuPerm> ToRoleMenuPerm(this List<RoleMenuPermAll> roleMenuPermAlls)
+        {
+            //var roles = new List<Role>();
+            //var menus = new List<Menu>();
+            //var permissions = new List<Permission>();
+
+            var roleMenuPerms = new List<RoleMenuPerm>();
+
+            foreach (var roleMenuPermAll in roleMenuPermAlls)
+            {
+                // Check if the Role-Menu combination already exists
+                var existingEntry = roleMenuPerms.FirstOrDefault(rm => rm.Role.Id == roleMenuPermAll.RoleId && rm.Menu.Id == roleMenuPermAll.MenuId);
+
+                if (existingEntry == null)
+                {
+                    // Create a new RoleMenuPerm entry
+                    var newRoleMenuPerm = new RoleMenuPerm
+                    {
+                        Role = new Role
+                        {
+                            Id = roleMenuPermAll.RoleId,
+                            RoleName = roleMenuPermAll.RoleName,
+                            UserCount = roleMenuPermAll.UserCount
+                        },
+                        Menu = new Menu
+                        {
+                            Id = roleMenuPermAll.MenuId,
+                            MenuName = roleMenuPermAll.MenuName
+                        },
+                        Perm = new List<Perm>
+                        {
+                            new Perm
+                            {
+                                Id = roleMenuPermAll.PermId,
+                                PermName = roleMenuPermAll.PermName
+                            }
+                        }
+                    };
+
+                    roleMenuPerms.Add(newRoleMenuPerm);
+                }
+                else
+                {
+                    // Add permission to the existing RoleMenuPerm entry
+                    existingEntry.Perm ??= new List<Perm>();
+                    if (!existingEntry.Perm.Any(p => p.Id == roleMenuPermAll.PermId))
+                    {
+                        existingEntry.Perm.Add(new Perm
+                        {
+                            Id = roleMenuPermAll.PermId,
+                            PermName = roleMenuPermAll.PermName
+                        });
+                    }
+                }
+            }
+
+            return roleMenuPerms;
         }
 
         public static RolePermissionDto ToRolePermissionDto(this V_Role_Menu roleMenu, List<PermissionDto> permissions)

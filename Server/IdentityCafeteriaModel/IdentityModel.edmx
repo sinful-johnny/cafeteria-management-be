@@ -185,6 +185,17 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <Property Name="permissionID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6013: The table/view 'cafeteriaDB.dbo.V_RoleMenuPerm' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="V_RoleMenuPerm">
+          <Property Name="RoleID" Type="nvarchar" MaxLength="450" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
+          <Property Name="UserCount" Type="int" />
+          <Property Name="menuID" Type="int" />
+          <Property Name="menuName" Type="nvarchar" MaxLength="50" />
+          <Property Name="permissionName" Type="nvarchar" MaxLength="50" />
+          <Property Name="permissionID" Type="int" />
+        </EntityType>-->
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'cafeteriaDB.dbo.V_TakePermission_From_UserAndApiAndRole' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="V_TakePermission_From_UserAndApiAndRole">
           <Key>

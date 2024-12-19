@@ -1,6 +1,7 @@
 ﻿using api.Dtos.MenuResource;
 using api.Identity;
 using api.Interfaces;
+using api.Models;
 using IdentityCafeteriaModel;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,17 @@ namespace api.Repository
         public MenuResource_repository(ApplicationDBContext context)
         {
             _context = context;
+        }
+        public async Task<List<V_Permission_RoleMenu>> getAllPermissions()
+        {
+            var resultTablesOfPermission = await _context.VPermission_Roles
+                .FromSqlRaw("""
+                                select *
+                                From DBO.V_Permission_RoleMenu
+                            """)
+                .ToListAsync();
+
+            return resultTablesOfPermission;
         }
         public async Task<List<V_Menu>> getAllMenus()
         {
@@ -60,6 +72,40 @@ namespace api.Repository
                 .ToListAsync();
 
             return resultTablesOfRoles;
+        }
+
+        public async Task<List<RoleMenuPermAll>> getAllRolesPermAll()
+        {
+            var resultTablesOfRoleMenuPerms = await _context.rolemenupermAll
+                .FromSqlRaw("""
+                                select *
+                                From DBO.V_RoleMenuPerm
+                            """)
+                .ToListAsync();
+
+            return resultTablesOfRoleMenuPerms;
+        }
+
+        public async Task UpdateRoleMenuPerm(RoleMenuPermAll roleMenuPerm)
+        {
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(
+                    """
+                        EXEC DBO.sp_UpdateRoleMenuPerms
+                        @RoleID = {0}, 
+                        @MenuID = {1},
+                        @PermID = {2}
+                    """,
+                    roleMenuPerm.RoleId,
+                    roleMenuPerm.MenuId,
+                    roleMenuPerm.PermId);
+            }
+            catch (Exception ex)
+            {
+                // Log the error and rethrow or handle it based on your application needs
+                throw new Exception("Failed to update RoleMenuPerm.", ex);
+            }
         }
     }
 }

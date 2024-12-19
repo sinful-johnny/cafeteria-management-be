@@ -41,6 +41,8 @@ namespace api.Identity
 
         public DbSet<V_Role> RoleModels { get; set; }
 
+        public DbSet<RoleMenuPermAll> rolemenupermAll {  get; set; }
+
 
         //Entity for Identity
         public DbSet<MenuItem> MenuItems { get; set; }
@@ -160,6 +162,9 @@ namespace api.Identity
             
             modelBuilder.Entity<UserRolesModel>()
                 .HasKey(v => new { v.Role }); // Composite key for V_Role_Menu
+
+            modelBuilder.Entity<RoleMenuPermAll>()
+                .HasKey(rmpa => new { rmpa.RoleId, rmpa.MenuId, rmpa.PermId }); // Composite key for V_Menu
 
             //Constraints for CafeteriaDB
 
