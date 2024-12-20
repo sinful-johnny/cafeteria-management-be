@@ -131,7 +131,7 @@ namespace api.Controllers
         }
 
         [HttpDelete("RoleMenuPerms/Delete")]
-        public async Task<IActionResult> DeleteRoleMenuPerms([FromQuery] string roleId, [FromQuery] int menuId, [FromBody] UpdatePermPayload payload)
+        public async Task<IActionResult> DeleteRoleMenuPerms([FromQuery] string roleId, [FromQuery] int menuId, [FromQuery] int permId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -145,7 +145,7 @@ namespace api.Controllers
                 {
                     MenuId = menuId,
                     RoleId = roleId,
-                    PermId = payload.PermId
+                    PermId = permId
                 };
                 // Delete the record
                 await _tableMenuResouceRepo.DeleteRoleMenuPerm(roleMenuPerms);
