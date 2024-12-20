@@ -1,6 +1,7 @@
 ﻿using api.Identity;
 using api.Interfaces;
 using api.Models;
+using IdentityCafeteriaModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
@@ -19,6 +20,19 @@ namespace api.Repository
                 .FromSqlRaw("EXEC DBO.sp_TakeRoleFromUser @UserName={0}", UserName)
                 .ToListAsync();
             return UserRoles;
+        }
+
+        public async Task<(List<V_User>, List<V_UserId_RoleId>)> getUserContainRoles()
+        {
+            var Users = await _context.V_Users
+                .FromSqlRaw("Select * From DBO.V_User")
+                .ToListAsync();
+
+            var Roles = await _context.V_UserId_RoleIds
+                .FromSqlRaw("Select * From DBO.V_UserId_RoleId")
+                .ToListAsync();
+
+            return (Users, Roles);
         }
     }
 }

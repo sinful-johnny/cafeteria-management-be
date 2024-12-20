@@ -44,6 +44,8 @@ namespace IdentityCafeteriaModel
         public virtual DbSet<V_TakePermission_From_UserAndApiAndRole> V_TakePermission_From_UserAndApiAndRole { get; set; }
         public virtual DbSet<V_TakeRole_From_UserAndApi> V_TakeRole_From_UserAndApi { get; set; }
         public virtual DbSet<V_Role> V_Role { get; set; }
+        public virtual DbSet<V_User> V_User { get; set; }
+        public virtual DbSet<V_UserId_RoleId> V_UserId_RoleId { get; set; }
     
         public virtual ObjectResult<sp_TakePermission_From_UserAndApiAndRole_Result> sp_TakePermission_From_UserAndApiAndRole(string userName, string api)
         {

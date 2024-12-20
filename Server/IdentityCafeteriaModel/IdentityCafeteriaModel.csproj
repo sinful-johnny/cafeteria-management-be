@@ -121,6 +121,12 @@
     <Compile Include="V_TakeRole_From_UserAndApi.cs">
       <DependentUpon>IdentityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="V_User.cs">
+      <DependentUpon>IdentityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="V_UserId_RoleId.cs">
+      <DependentUpon>IdentityModel.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />

@@ -57,6 +57,8 @@ namespace api.Identity
         public DbSet<V_Menu> VMenus { get; set; }
         public DbSet<V_Permission_RoleMenu> VPermission_Roles { get; set; }
         public DbSet<V_Role_Menu> VRole_Menus { get; set; }
+        public DbSet<V_User> V_Users { get; set; }
+        public DbSet<V_UserId_RoleId> V_UserId_RoleIds { get; set; }
 
         //Entity for Db
         public DbSet<UserRole> userRoles { get; set; }
@@ -153,6 +155,9 @@ namespace api.Identity
 
             modelBuilder.Entity<V_Menu>()
                 .HasKey(v => new { v.menuID }); // Composite key for V_Menu
+            
+            modelBuilder.Entity<V_Role>()
+                .HasKey(v => new { v.RoleID }); // Composite key for V_Role
 
             modelBuilder.Entity<V_Permission_RoleMenu>()
                 .HasKey(v => new { v.rolemenuID, v.permissionID }); // Composite key for V_Permission_RoleMenu
@@ -165,6 +170,9 @@ namespace api.Identity
 
             modelBuilder.Entity<RoleMenuPermAll>()
                 .HasKey(rmpa => new { rmpa.RoleId, rmpa.MenuId, rmpa.PermId }); // Composite key for V_Menu
+            
+                modelBuilder.Entity<V_UserId_RoleId>()
+                .HasKey(ur => new { ur.UserId, ur.RoleId });
 
             //Constraints for CafeteriaDB
 

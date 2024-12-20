@@ -185,17 +185,6 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_Role_Menu' does not have a prima
           <Property Name="permissionID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6013: The table/view 'cafeteriaDB.dbo.V_RoleMenuPerm' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="V_RoleMenuPerm">
-          <Property Name="RoleID" Type="nvarchar" MaxLength="450" />
-          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
-          <Property Name="UserCount" Type="int" />
-          <Property Name="menuID" Type="int" />
-          <Property Name="menuName" Type="nvarchar" MaxLength="50" />
-          <Property Name="permissionName" Type="nvarchar" MaxLength="50" />
-          <Property Name="permissionID" Type="int" />
-        </EntityType>-->
-        <!--Errors Found During Generation:
 warning 6002: The table/view 'cafeteriaDB.dbo.V_TakePermission_From_UserAndApiAndRole' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="V_TakePermission_From_UserAndApiAndRole">
           <Key>
@@ -216,6 +205,34 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
           <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" />
           <Property Name="API" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'cafeteriaDB.dbo.V_User' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="V_User">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="EmailVerified" />
+            <PropertyRef Name="PhoneVerified" />
+            <PropertyRef Name="Locked" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailVerified" Type="bit" Nullable="false" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PhoneVerified" Type="bit" Nullable="false" />
+          <Property Name="Locked" Type="bit" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'cafeteriaDB.dbo.V_UserId_RoleId' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="V_UserId_RoleId">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
         </EntityType>
         <Association Name="FK_ApiPermission_AspNetRoleAPI_RoleApiId">
           <End Role="AspNetRoleAPI" Type="Self.AspNetRoleAPI" Multiplicity="1">
@@ -495,6 +512,24 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
     [V_TakeRole_From_UserAndApi].[UserName] AS [UserName], 
     [V_TakeRole_From_UserAndApi].[API] AS [API]
     FROM [dbo].[V_TakeRole_From_UserAndApi] AS [V_TakeRole_From_UserAndApi]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="V_User" EntityType="Self.V_User" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [V_User].[Id] AS [Id], 
+    [V_User].[UserName] AS [UserName], 
+    [V_User].[Email] AS [Email], 
+    [V_User].[EmailVerified] AS [EmailVerified], 
+    [V_User].[PhoneNumber] AS [PhoneNumber], 
+    [V_User].[PhoneVerified] AS [PhoneVerified], 
+    [V_User].[Locked] AS [Locked]
+    FROM [dbo].[V_User] AS [V_User]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="V_UserId_RoleId" EntityType="Self.V_UserId_RoleId" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [V_UserId_RoleId].[UserId] AS [UserId], 
+    [V_UserId_RoleId].[RoleId] AS [RoleId], 
+    [V_UserId_RoleId].[RoleName] AS [RoleName]
+    FROM [dbo].[V_UserId_RoleId] AS [V_UserId_RoleId]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_ApiPermission_AspNetRoleAPI_RoleApiId" Association="Self.FK_ApiPermission_AspNetRoleAPI_RoleApiId">
             <End Role="AspNetRoleAPI" EntitySet="AspNetRoleAPI" />
@@ -948,6 +983,8 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
           <EntitySet Name="V_TakePermission_From_UserAndApiAndRole" EntityType="cafeteriaDBModel.V_TakePermission_From_UserAndApiAndRole" />
           <EntitySet Name="V_TakeRole_From_UserAndApi" EntityType="cafeteriaDBModel.V_TakeRole_From_UserAndApi" />
           <EntitySet Name="V_Role" EntityType="cafeteriaDBModel.V_Role" />
+          <EntitySet Name="V_User" EntityType="cafeteriaDBModel.V_User" />
+          <EntitySet Name="V_UserId_RoleId" EntityType="cafeteriaDBModel.V_UserId_RoleId" />
         </EntityContainer>
         <ComplexType Name="sp_TakePermission_From_UserAndApiAndRole_Result">
           <Property Type="String" Name="Role" Nullable="true" MaxLength="256" />
@@ -978,6 +1015,30 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
           <Property Name="RoleID" Type="String" Nullable="false" MaxLength="450" FixedLength="false" Unicode="true" />
           <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="UserCount" Type="Int32" />
+        </EntityType>
+        <EntityType Name="V_User">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="EmailVerified" />
+            <PropertyRef Name="PhoneVerified" />
+            <PropertyRef Name="Locked" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="450" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailVerified" Type="Boolean" Nullable="false" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneVerified" Type="Boolean" Nullable="false" />
+          <Property Name="Locked" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="V_UserId_RoleId">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="450" FixedLength="false" Unicode="true" />
+          <Property Name="RoleId" Type="String" Nullable="false" MaxLength="450" FixedLength="false" Unicode="true" />
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1188,6 +1249,28 @@ warning 6002: The table/view 'cafeteriaDB.dbo.V_TakeRole_From_UserAndApi' does n
                 <ScalarProperty Name="UserCount" ColumnName="UserCount" />
                 <ScalarProperty Name="RoleName" ColumnName="RoleName" />
                 <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="V_User">
+            <EntityTypeMapping TypeName="cafeteriaDBModel.V_User">
+              <MappingFragment StoreEntitySet="V_User">
+                <ScalarProperty Name="Locked" ColumnName="Locked" />
+                <ScalarProperty Name="PhoneVerified" ColumnName="PhoneVerified" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="EmailVerified" ColumnName="EmailVerified" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="V_UserId_RoleId">
+            <EntityTypeMapping TypeName="cafeteriaDBModel.V_UserId_RoleId">
+              <MappingFragment StoreEntitySet="V_UserId_RoleId">
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
