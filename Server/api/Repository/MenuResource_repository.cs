@@ -14,12 +14,12 @@ namespace api.Repository
         {
             _context = context;
         }
-        public async Task<List<V_Permission_RoleMenu>> getAllPermissions()
+        public async Task<List<Identity.Permission>> getAllPermissions()
         {
-            var resultTablesOfPermission = await _context.VPermission_Roles
+            var resultTablesOfPermission = await _context.Permissions
                 .FromSqlRaw("""
-                                select *
-                                From DBO.V_Permission_RoleMenu
+                                select Id, Name
+                                from dbo.Permission
                             """)
                 .ToListAsync();
 

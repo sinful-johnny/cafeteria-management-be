@@ -39,12 +39,12 @@ namespace api.Mappers
             };
         }
 
-        public static Perm ToRolePermModel(this V_Permission_RoleMenu V_Perm)
+        public static Perm ToPermModel(this Identity.Permission perm)
         {
             return new Perm
             {
-                Id = V_Perm.permissionID,
-                PermName = V_Perm.permissionName
+                Id = perm.Id,
+                PermName = perm.Name
             };
         }
 
