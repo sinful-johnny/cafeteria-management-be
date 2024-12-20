@@ -77,7 +77,7 @@ namespace api.Mappers
                             Id = roleMenuPermAll.MenuId,
                             MenuName = roleMenuPermAll.MenuName
                         },
-                        Perm = new List<Perm>
+                        Perms = new List<Perm>
                         {
                             new Perm
                             {
@@ -92,10 +92,10 @@ namespace api.Mappers
                 else
                 {
                     // Add permission to the existing RoleMenuPerm entry
-                    existingEntry.Perm ??= new List<Perm>();
-                    if (!existingEntry.Perm.Any(p => p.Id == roleMenuPermAll.PermId))
+                    existingEntry.Perms ??= new List<Perm>();
+                    if (!existingEntry.Perms.Any(p => p.Id == roleMenuPermAll.PermId))
                     {
-                        existingEntry.Perm.Add(new Perm
+                        existingEntry.Perms.Add(new Perm
                         {
                             Id = roleMenuPermAll.PermId,
                             PermName = roleMenuPermAll.PermName
