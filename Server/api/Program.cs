@@ -139,13 +139,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("ADMIN"));
-    options.AddPolicy("UserOnly", policy => policy.RequireRole("USER"));
-});
-
-builder.Services.AddAuthorization(options => 
-{ options.AddPolicy("ReadWrite", policy => 
-    policy.Requirements.Add(new PolicyRequirementModel("ReadWrite"))); 
+    options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Manager"));
 });
 
 

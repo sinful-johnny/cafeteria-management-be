@@ -281,3 +281,6 @@ GO
 GRANT EXECUTE ON OBJECT::sp_ADMIN_LOGIN
     TO ADMIN; 
 GO
+
+select *
+from AspNetUsers, AspNetUserRoles, AspNetRoles

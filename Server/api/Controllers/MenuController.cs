@@ -1,6 +1,7 @@
 ﻿using api.Dtos.MenuResource;
 using api.Interfaces;
 using api.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
@@ -19,7 +20,7 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAllMenu()
         {
             if (!ModelState.IsValid)
