@@ -86,6 +86,28 @@ namespace api.Repository
             return resultTablesOfRoleMenuPerms;
         }
 
+        public async Task InsertRoleMenuPerm(RoleMenuPermAll roleMenuPerm)
+        {
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(
+                    """
+                        EXEC DBO.sp_InsertRoleMenuPerms
+                        @RoleID = {0}, 
+                        @MenuID = {1},
+                        @PermID = {2}
+                    """,
+                    roleMenuPerm.RoleId,
+                    roleMenuPerm.MenuId,
+                    roleMenuPerm.PermId);
+            }
+            catch (Exception ex)
+            {
+                // Log the error and rethrow or handle it based on your application needs
+                throw new Exception("Failed to insert RoleMenuPerm.", ex);
+            }
+        }
+
         public async Task UpdateRoleMenuPerm(RoleMenuPermAll roleMenuPerm)
         {
             try
@@ -105,6 +127,28 @@ namespace api.Repository
             {
                 // Log the error and rethrow or handle it based on your application needs
                 throw new Exception("Failed to update RoleMenuPerm.", ex);
+            }
+        }
+
+        public async Task DeleteRoleMenuPerm(RoleMenuPermAll roleMenuPerm)
+        {
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(
+                    """
+                        EXEC DBO.sp_DeleteRoleMenuPerms
+                        @RoleID = {0}, 
+                        @MenuID = {1},
+                        @PermID = {2}
+                    """,
+                    roleMenuPerm.RoleId,
+                    roleMenuPerm.MenuId,
+                    roleMenuPerm.PermId);
+            }
+            catch (Exception ex)
+            {
+                // Log the error and rethrow or handle it based on your application needs
+                throw new Exception("Failed to delete RoleMenuPerm.", ex);
             }
         }
     }

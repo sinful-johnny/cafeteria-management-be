@@ -13,15 +13,22 @@ namespace api.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+
+        //private readonly IUser_Roles_repository _user_Roles_Repository;
+
         private readonly ITokenService _tokenService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            //IUser_Roles_repository user_Roles_Repository,
             ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+
+            //_user_Roles_Repository = user_Roles_Repository;
+
             _tokenService = tokenService;
         }
 
@@ -42,6 +49,7 @@ namespace api.Controllers
                 return Unauthorized(new { Message = "Invalid username or password." });
 
             // Get user roles
+            //var roles = await _user_Roles_Repository.getRolesFromUser(user.UserName);
             var roles = await _userManager.GetRolesAsync(user);
 
             // Generate the token

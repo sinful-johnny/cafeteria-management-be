@@ -60,7 +60,7 @@ namespace api.Controllers
             return Content(jsonResult, "application/json");
         }
 
-        [HttpPost("RoleMenuPerms")]
+        [HttpPut("RoleMenuPerms")]
         public async Task<IActionResult> UpdateRoleMenuPerms([FromQuery] string roleId, [FromQuery] int menuId, [FromBody] UpdatePermPayload payload)
         {
             if (!ModelState.IsValid)
@@ -89,6 +89,78 @@ namespace api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     message = "An error occurred while updating the permissions.",
+                    details = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("RoleMenuPerms/Insert")]
+        public async Task<IActionResult> InsertRoleMenuPerms([FromQuery] string roleId, [FromQuery] int menuId, [FromBody] UpdatePermPayload payload)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (string.IsNullOrEmpty(roleId) || menuId <= 0 || payload == null || payload.PermId <= 0)
+                return BadRequest("Invalid parameters or payload.");
+
+            try
+            {
+                // Insert new entry
+                var roleMenuPerms = new RoleMenuPermAll
+                {
+                    MenuId = menuId,
+                    RoleId = roleId,
+                    PermId = payload.PermId
+                };
+                await _tableMenuResouceRepo.InsertRoleMenuPerm(roleMenuPerms);
+
+                return Ok(new
+                {
+                    message = "successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handle errors
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = "An error occurred while inserting the permissions.",
+                    details = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("RoleMenuPerms/Delete")]
+        public async Task<IActionResult> DeleteRoleMenuPerms([FromQuery] string roleId, [FromQuery] int menuId, [FromBody] UpdatePermPayload payload)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (string.IsNullOrEmpty(roleId) || menuId <= 0)
+                return BadRequest("Invalid parameters.");
+
+            try
+            {
+                var roleMenuPerms = new RoleMenuPermAll
+                {
+                    MenuId = menuId,
+                    RoleId = roleId,
+                    PermId = payload.PermId
+                };
+                // Delete the record
+                await _tableMenuResouceRepo.DeleteRoleMenuPerm(roleMenuPerms);
+
+                return Ok(new
+                {
+                    message = "successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handle errors
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = "An error occurred while deleting the permission.",
                     details = ex.Message
                 });
             }

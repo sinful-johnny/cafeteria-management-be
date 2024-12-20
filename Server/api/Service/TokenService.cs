@@ -30,6 +30,7 @@ namespace api.Service
         }
         public async Task<string> CreateToken(string UserName, IList<string> roles)
         {
+            //var RolesJson = JsonSerializer.Serialize(roles.Select(r => r.Role));
             var RolesJson = JsonSerializer.Serialize(roles);
 
             var UserNameJson = JsonSerializer.Serialize(UserName);

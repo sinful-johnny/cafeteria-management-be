@@ -72,13 +72,98 @@ Create Or Alter Proc sp_TakeRoleFromUser
     @UserName nvarchar(50)
 AS
 BEGIN
-    Select RoleName
+    Select UserName, RoleName Role
     From V_User_Role
     Where UserName = @UserName
 END
 
 exec sp_TakeRoleFromUser 'deeznut2@example.com';
 go
+
+Create Or Alter Proc sp_InsertRoleMenuPerms
+    @RoleID nvarchar(50),
+    @MenuID int,
+    @PermID int
+AS
+BEGIN
+
+    -- Check if the record already exists
+    IF EXISTS (
+        SELECT 1
+        FROM AspNetRoleMenu anrm, MenuPermission mp
+        WHERE anrm.MenuId = @MenuID
+          AND anrm.RoleId = @RoleID
+          AND anrm.Id = mp.RoleMenuId
+          AND mp.PermissionId = @PermID
+    ) 
+    BEGIN
+        -- Return a message if the record exists
+        PRINT 'This role already exists'
+        RETURN
+    END
+
+    -- Delete 'No' row
+    delete from MenuPermission 
+    where RoleMenuId = (select Id
+                        from AspNetRoleMenu 
+                        where MenuId = @MenuID
+                            and RoleId = @RoleID)
+        and PermissionId = (select Id from Permission where Name = 'No')
+
+    Insert into MenuPermission (RoleMenuId, PermissionId)
+    values ((select Id 
+            from AspNetRoleMenu 
+            where MenuId = @MenuID
+                and RoleId = @RoleID), @PermID)
+END
+go
+
+-- exec sp_InsertRoleMenuPerms '2077F726-A824-4785-A394-010BB886CE69', 1, 2;
+-- go
+
+Create Or Alter Proc sp_DeleteRoleMenuPerms
+    @RoleID nvarchar(50),
+    @MenuID int,
+    @PermID int
+AS
+BEGIN
+
+    IF EXISTS (
+        SELECT 1
+        FROM AspNetRoleMenu
+        WHERE RoleId = @RoleID AND MenuId = @MenuID
+    )
+    begin
+        delete from MenuPermission 
+        where RoleMenuId = (select Id
+                            from AspNetRoleMenu 
+                            where MenuId = @MenuID
+                                and RoleId = @RoleID)
+            and PermissionId = @PermID
+    end
+
+    IF not EXISTS (
+        SELECT 1
+        FROM AspNetRoleMenu anrm, MenuPermission mp
+        WHERE anrm.MenuId = @MenuID
+          AND anrm.RoleId = @RoleID
+          AND anrm.Id = mp.RoleMenuId
+    ) 
+    BEGIN
+        Insert into MenuPermission (RoleMenuId, PermissionId)
+        values ((select Id 
+                from AspNetRoleMenu 
+                where MenuId = @MenuID
+                    and RoleId = @RoleID),
+                (select Id
+                from Permission
+                where Name = 'No'))
+    END
+END
+go
+
+-- exec sp_DeleteRoleMenuPerms '2077F726-A824-4785-A394-010BB886CE69', 1, 2;
+-- go
 
 Create Or Alter Proc sp_UpdateRoleMenuPerms
     @RoleID nvarchar(50),
