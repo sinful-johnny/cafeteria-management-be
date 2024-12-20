@@ -68,6 +68,21 @@ as
         and userRoles.RoleId = roles.Id
 go
 
+create or alter view V_User
+as
+	select distinct Id, UserName, Email, EmailConfirmed as EmailVerified, PhoneNumber, PhoneNumberConfirmed as PhoneVerified, LockoutEnabled as Locked
+    from AspNetUsers
+go
+
+create or alter view V_UserId_RoleId
+as
+
+	select distinct anu.Id UserId, anur.RoleId, anr.Name RoleName
+    from AspNetUsers anu, AspNetUserRoles anur, AspnetRoles anr
+    where UserId = anur.UserId
+        and anr.Id = anur.RoleId
+go
+
 Create Or Alter Proc sp_TakeRoleFromUser
     @UserName nvarchar(50)
 AS
@@ -118,8 +133,8 @@ BEGIN
 END
 go
 
--- exec sp_InsertRoleMenuPerms '2077F726-A824-4785-A394-010BB886CE69', 1, 2;
--- go
+exec sp_InsertRoleMenuPerms '2077F726-A824-4785-A394-010BB886CE69', 1, 2;
+go
 
 Create Or Alter Proc sp_DeleteRoleMenuPerms
     @RoleID nvarchar(50),
@@ -162,8 +177,8 @@ BEGIN
 END
 go
 
--- exec sp_DeleteRoleMenuPerms '2077F726-A824-4785-A394-010BB886CE69', 1, 2;
--- go
+exec sp_DeleteRoleMenuPerms '2077F726-A824-4785-A394-010BB886CE69', 1, 2;
+go
 
 Create Or Alter Proc sp_UpdateRoleMenuPerms
     @RoleID nvarchar(50),
