@@ -1,8 +1,10 @@
 ﻿using api.Dtos.MenuResource;
+using api.Identity;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -14,9 +16,15 @@ namespace api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUser_Roles_repository _user_Roles_Repository;
-        public UserController(IUser_Roles_repository user_Roles_Repository)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+        public UserController(IUser_Roles_repository user_Roles_Repository,
+                            UserManager<ApplicationUser> userManager, 
+                            RoleManager<ApplicationRole> roleManager)
         {
             _user_Roles_Repository = user_Roles_Repository;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -51,5 +59,80 @@ namespace api.Controllers
 
             return Content(jsonResult, "application/json");
         }
+
+        // Add Role to User
+        [HttpPost("add-role/{userId}")]
+        public async Task<IActionResult> AddRoleToUser(string userId, [FromBody] RoleRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var role = await _roleManager.FindByIdAsync(request.RoleId);
+            if (role == null)
+            {
+                return NotFound("Role not found.");
+            }
+
+            // Check if the user is already in the role
+            var isInRole = await _userManager.IsInRoleAsync(user, role.Name);
+            if (isInRole)
+            {
+                return BadRequest($"User is already in role '{role.Name}'.");
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, role.Name);
+            if (result.Succeeded)
+            {
+                return Ok($"Role '{role.Name}' added to user '{user.UserName}'.");
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        // Remove Role from User
+        [HttpDelete("remove-role/{userId}/{roleId}")]
+        public async Task<IActionResult> RemoveRoleFromUser(string userId, string roleId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role == null)
+            {
+                return NotFound("Role not found.");
+            }
+
+            var isInRole = await _userManager.IsInRoleAsync(user, role.Name);
+            if (!isInRole)
+            {
+                return BadRequest($"User is not in role '{role.Name}'.");
+            }
+
+            var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
+            if (result.Succeeded)
+            {
+                return Ok($"Role '{role.Name}' removed from user '{user.UserName}'.");
+            }
+
+            return BadRequest(result.Errors);
+        }
+    }
+
+    // Request Model
+    public class RoleRequest
+    {
+        public string RoleId { get; set; }
     }
 }
