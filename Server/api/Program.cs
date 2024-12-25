@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using api.Models.AuthModels;
 using api.MiddleWare;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,24 +85,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-//Identity services
-//builder.Services.AddIdentity<AppUser, IdentityRole>(options => //extend the roles 
-//                                                               //extend the AppUser 
-//{
-//    options.Password.RequireDigit = true; //Require numbers within the password
 
-//    options.Password.RequireLowercase = true;
-//    options.Password.RequireUppercase = true;
-
-//    options.Password.RequireNonAlphanumeric = true;
-
-//    options.Password.RequiredLength = 8;
-//})
-//.AddEntityFrameworkStores<ApplicationDBContext>(); //Entity Framework Stores
-
-//builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-//    .AddEntityFrameworkStores<ApplicationDBContext>()
-//    .AddDefaultTokenProviders();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<ApplicationRole>()
@@ -133,8 +117,13 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JWT:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(signingKeyEncryption))//Encryption
+            System.Text.Encoding.UTF8.GetBytes(signingKeyEncryption)),//Encryption
+
+        // Map "role" as the role claim type
+        //RoleClaimType = "role"
     };
+    // Map "role" claims properly
+    //options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
 });
 
 builder.Services.AddAuthorization(options =>
@@ -158,8 +147,8 @@ builder.Services.AddScoped<IUser_Roles_repository, User_Roles_repository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddSingleton<IAuthorizationHandler, UserApiRolePermissionService>();
-builder.Services.AddScoped<IApiAuthentication_Repository, ApiAuthentication_repository>();
+//builder.Services.AddSingleton<IAuthorizationHandler, UserApiRolePermissionService>();
+//builder.Services.AddScoped<IApiAuthentication_Repository, ApiAuthentication_repository>();
 
 var app = builder.Build();
 
@@ -172,7 +161,7 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpLogging();
 app.UseMiddleware<CustomLoggingMiddleware>();
-app.UseMiddleware<ParseTokenMiddleWare>();
+//app.UseMiddleware<ParseTokenMiddleWare>();
 
 app.UseRouting(); 
 app.UseCors("AllowSpecificOrigins");

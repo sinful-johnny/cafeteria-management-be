@@ -20,7 +20,7 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAllMenu()
         {
             if (!ModelState.IsValid)

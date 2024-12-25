@@ -79,7 +79,7 @@ as
 
 	select distinct anu.Id UserId, anur.RoleId, anr.Name RoleName
     from AspNetUsers anu, AspNetUserRoles anur, AspnetRoles anr
-    where UserId = anur.UserId
+    where anu.Id = anur.UserId
         and anr.Id = anur.RoleId
 go
 

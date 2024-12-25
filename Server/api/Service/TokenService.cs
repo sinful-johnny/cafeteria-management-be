@@ -30,17 +30,17 @@ namespace api.Service
         }
         public async Task<string> CreateToken(string UserName, IList<string> roles)
         {
-            //var RolesJson = JsonSerializer.Serialize(roles.Select(r => r.Role));
-            var RolesJson = JsonSerializer.Serialize(roles);
-
-            var UserNameJson = JsonSerializer.Serialize(UserName);
-
+            // Create claims list
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, UserNameJson), // Standard claim type for username
-                new Claim("Roles", RolesJson) // Add serialized roles as a custom claim
+                new Claim(ClaimTypes.Name, UserName) // Standard claim type for username
             };
 
+            // Add each role as a separate claim
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role.ToString())); // ClaimTypes.Role is the standard type for roles
+            }
 
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
