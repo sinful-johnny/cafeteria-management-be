@@ -10,6 +10,7 @@ namespace api.Controllers
 {
     [Route("api/canva")]
     [ApiController]
+    [Authorize(Roles = "Manager, Staff, Customer")]
     public class CanvaController : ControllerBase
     {
         private readonly ApplicationDBContext _context;

@@ -2,6 +2,7 @@
 using api.Interfaces;
 using api.Mappers;
 using api.Models.AuthModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata;
@@ -11,6 +12,7 @@ namespace api.Controllers
 {
     [Route("api/MenuResources")]
     [ApiController]
+    [Authorize(Roles = "Admin, Manager, Staff, Customer")]
     public class MenuResourceController : Controller
     {
         private readonly IMenuResource_Repository _tableMenuResouceRepo;
@@ -20,7 +22,6 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetAllMenuResource()
         {
             if (!ModelState.IsValid)

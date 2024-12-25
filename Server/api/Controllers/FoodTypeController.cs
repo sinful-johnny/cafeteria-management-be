@@ -8,6 +8,7 @@ namespace api.Controllers
 {
     [Route("api/FoodType")]
     [ApiController]
+    [Authorize(Roles = "Manager, Staff, Customer")]
     public class FoodTypeController : ControllerBase
     {
         private readonly ApplicationDBContext _context;

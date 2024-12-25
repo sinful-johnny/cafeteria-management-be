@@ -1,6 +1,7 @@
 ﻿using api.Dtos.MenuResource;
 using api.Interfaces;
 using api.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
@@ -10,6 +11,7 @@ namespace api.Controllers
 {
     [Route("api/Role")]
     [ApiController]
+    [Authorize(Roles = "Admin, Manager")]
     public class RoleController : ControllerBase
     {
         private readonly IMenuResource_Repository _tableMenuResouceRepo;

@@ -9,6 +9,7 @@ namespace api.Controllers
 {
     [Route("/api/TableFoods")]
     [ApiController]
+    [Authorize(Roles = "Manager, Staff, Customer")]
     public class TableFoodsController : Controller
     {
         private readonly ITABLE_FOOD_Repository _tablefoodRepo;
@@ -46,6 +47,7 @@ namespace api.Controllers
 
         [HttpPost]
         //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Manager, Staff")]
         public async Task<IActionResult> SaveCreatedTable([FromBody] List<TABLE_FOODsDto> TablesInCanvaDto)
         {
             if (!ModelState.IsValid)

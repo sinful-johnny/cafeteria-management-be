@@ -11,6 +11,7 @@ namespace api.Controllers
 {
     [Route("api/Permission")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class PermController : ControllerBase
     {
         private readonly IMenuResource_Repository _tableMenuResouceRepo;

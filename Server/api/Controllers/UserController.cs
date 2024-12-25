@@ -3,6 +3,7 @@ using api.Identity;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ namespace api.Controllers
 {
     [Route("api/User")]
     [ApiController]
+    [Authorize(Roles = "Admin, Manager")]
     public class UserController : ControllerBase
     {
         private readonly IUser_Roles_repository _user_Roles_Repository;
@@ -62,6 +64,7 @@ namespace api.Controllers
 
         // Add Role to User
         [HttpPost("add-role/{userId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRoleToUser(string userId, [FromBody] RoleRequest request)
         {
             if (!ModelState.IsValid)
@@ -97,6 +100,7 @@ namespace api.Controllers
 
         // Remove Role from User
         [HttpDelete("remove-role/{userId}/{roleId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveRoleFromUser(string userId, string roleId)
         {
             if (!ModelState.IsValid)

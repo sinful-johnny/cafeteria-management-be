@@ -2,6 +2,7 @@
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
@@ -11,6 +12,7 @@ namespace api.Controllers
 {
     [Route("api/RoleMenuPerm")]
     [ApiController]
+    [Authorize(Roles = "Admin, Manager")]
     public class RoleMenuPermController : ControllerBase
     {
         private readonly IMenuResource_Repository _tableMenuResouceRepo;
@@ -61,6 +63,7 @@ namespace api.Controllers
         }
 
         [HttpPut("RoleMenuPerms")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRoleMenuPerms([FromQuery] string roleId, [FromQuery] int menuId, [FromBody] UpdatePermPayload payload)
         {
             if (!ModelState.IsValid)
@@ -95,6 +98,7 @@ namespace api.Controllers
         }
 
         [HttpPost("RoleMenuPerms/Insert")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> InsertRoleMenuPerms([FromQuery] string roleId, [FromQuery] int menuId, [FromBody] UpdatePermPayload payload)
         {
             if (!ModelState.IsValid)
@@ -131,6 +135,7 @@ namespace api.Controllers
         }
 
         [HttpDelete("RoleMenuPerms/Delete")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRoleMenuPerms([FromQuery] string roleId, [FromQuery] int menuId, [FromQuery] int permId)
         {
             if (!ModelState.IsValid)

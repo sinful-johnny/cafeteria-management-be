@@ -7,6 +7,7 @@ namespace api.Controllers
 {
     [Route("/api/ShapeType")]
     [ApiController]
+    [Authorize(Roles = "Manager")]
     public class ShapeTypeController : ControllerBase
     {
         private readonly ISHAPE_TYPE_Repository _shapeTypeRepo;
